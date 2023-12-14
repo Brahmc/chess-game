@@ -6,6 +6,10 @@
 #include "ChessPiece.h"
 #include "Game.h"
 
+bool isInBounds(int r, int k) {
+    return r >= 0 && r < 8 && k >= 0 && k < 8;
+}
+
 void addVerticalAndHorizontalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, Game &g) {
     for (int n = 0; n < 4; n++ ) {
         int start = n < 2 ? r : k;
@@ -15,7 +19,7 @@ void addVerticalAndHorizontalMoves(std::vector<std::pair<int, int>> &moves, Ches
             int newR = n < 2 ? i : r;
             int newK = n < 2 ? k : i;
 
-            if (newR < 0 || newR > 7 || newK < 0 || newK > 7) break;
+            if (!isInBounds(newR, newK)) break;
 
             ChessPiece* piece = g.getPiece(newR, newK);
 
@@ -40,7 +44,7 @@ void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, in
             int newR = r + i * dirR;
             int newK = k + i * dirK;
 
-            if (newR < 0 || newR > 7 || newK < 0 || newK > 7) break;
+            if (!isInBounds(newR, newK)) break;
 
             ChessPiece* piece = g.getPiece(newR, newK);
             if (piece == nullptr) {
@@ -54,6 +58,7 @@ void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, in
         }
     }
 }
+
 
 std::vector<std::pair<int, int>> Rook::getMoves(int r, int k, Game &g) {
     std::vector<std::pair<int, int>> moves;
@@ -83,7 +88,26 @@ std::vector<std::pair<int, int>> King::getMoves(int r, int k, Game &g) {
 }
 
 std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, Game &g) {
+    std::vector<std::pair<int, int>> moves;
+    int offset = getKleur() == wit ? -1 : 1;
+    int newR = r + offset;
 
+    if (isInBounds(newR, k)) {
+        ChessPiece* piece = g.getPiece(newR, k);
+        if (piece == nullptr || piece->getKleur() != getKleur()) {
+            moves.emplace_back(newR, k);
+        }
+    }
+
+    if (r != 1 && r != 6) return moves;
+    newR += offset;
+    if (isInBounds(newR, k)) {
+        ChessPiece* piece = g.getPiece(newR, k);
+        if (piece == nullptr || piece->getKleur() != getKleur()) {
+            moves.emplace_back(newR, k);
+        }
+    }
+    return moves;
 }
 
 

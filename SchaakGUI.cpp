@@ -30,7 +30,11 @@ void SchaakGUI::update() {
 // geklikt wordt. x,y geeft de positie aan waar er geklikt
 // werd; r is de 0-based rij, k de 0-based kolom
 void SchaakGUI::clicked(int r, int k) {
-
+    ChessPiece* piece = g.getPiece(r, k);
+    std::vector<std::pair<int, int>> moves = piece->getMoves(r, k, g);
+    for (auto move : moves) {
+        setTileSelect(move.first, move.second, true);
+    }
 }
 
 void SchaakGUI::newGame()

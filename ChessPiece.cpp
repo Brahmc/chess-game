@@ -6,20 +6,24 @@
 #include "ChessPiece.h"
 #include "Game.h"
 
-std::vector<std::tuple<int, int>> addVerticalAndHorizontalMoves(ChessPiece* p, int r, int k, Game &g) {
-    std::vector<std::tuple<int, int>> moves;
+void addVerticalAndHorizontalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, Game &g) {
     for (int n = 0; n < 4; n++ ) {
-        int start = n > 2 ? r : k;
-        int dir = n > 2 ? 1 : -1;
+        int start = n < 2 ? r : k;
+        int dir = n % 2 == 0 ? 1 : -1;
 
-        for (int i = start; i < 8; i += dir) {
-            ChessPiece* piece = g.getPiece(i, k);
+        for (int i = start + dir; i < 8 && i >= 0; i += dir) {
+            int newR = n < 2 ? i : r;
+            int newK = n < 2 ? k : i;
+
+            if (newR < 0 || newR > 7 || newK < 0 || newK > 7) break;
+
+            ChessPiece* piece = g.getPiece(newR, newK);
 
             if (piece == nullptr) {
-                moves.emplace_back(i, k);
+                moves.emplace_back(newR, newK);
             } else {
                 if (piece->getKleur() != p->getKleur()) {
-                    moves.emplace_back(i, k);
+                    moves.emplace_back(newR, newK);
                 }
                 break;
             }
@@ -38,11 +42,14 @@ std::vector<std::pair<int, int>> Knight::getMoves(int r, int k, Game &g) {
 }
 
 std::vector<std::pair<int, int>> Bishop::getMoves(int r, int k, Game &g) {
-
+    std::vector<std::pair<int, int>> moves;
+    addDiagonalMoves(moves, this, r, k, g);
 }
 
 std::vector<std::pair<int, int>> Queen::getMoves(int r, int k, Game &g) {
-
+    std::vector<std::pair<int, int>> moves;
+    addVerticalAndHorizontalMoves(moves, this, r, k, g);
+    return moves;
 }
 
 std::vector<std::pair<int, int>> King::getMoves(int r, int k, Game &g) {

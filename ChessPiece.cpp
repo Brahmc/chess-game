@@ -3,5 +3,5 @@
 //  Opmerkingen: (bvb aanpassingen van de opgave)
 //
 
-#include "SchaakStuk.h"
+#include "ChessPiece.h"
 

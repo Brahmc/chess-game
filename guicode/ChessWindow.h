@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "game.h"
-#include "SchaakStuk.h"
+#include "ChessPiece.h"
 #include <QCloseEvent>
 class ChessBoard;
 
@@ -28,7 +28,7 @@ protected:
 
     void removeAllMarking();
     void clearBoard();
-    void setItem(int i,int j,SchaakStuk* p);
+    void setItem(int i, int j, ChessPiece* p);
     void setPieceThreat(int i,int j,bool b);
     void removeAllPieceThreats();
     void setTileSelect(int i,int j,bool b);

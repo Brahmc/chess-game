@@ -6,7 +6,7 @@
 #define SCHAKEN_SCHAAK_GUI_H
 
 #include "guicode/ChessWindow.h"
-#include "SchaakStuk.h"
+#include "ChessPiece.h"
 #include <QMessageBox>
 #include <QAction>
 
@@ -31,7 +31,7 @@ private:
 
     void removeAllMarking();
     void clearBoard();
-    void setItem(int i,int j,SchaakStuk* p);
+    void setItem(int i,int j,ChessPiece* p);
     void setPieceThreat(int i,int j,bool b);
     void removeAllPieceThreats();
     void setTileSelect(int i,int j,bool b);

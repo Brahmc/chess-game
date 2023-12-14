@@ -17,7 +17,7 @@ void Game::setStartBord() {}
  * en verandert er niets aan het schaakbord.
  * Anders wordt de move uitgevoerd en wordt true teruggegeven
  */
-bool Game::move(SchaakStuk* s, int r, int k) {
+bool Game::move(ChessPiece* s, int r, int k) {
     return true;
 }
 
@@ -50,7 +50,7 @@ bool Game::staleMate(zw kleur) {
 /* Geeft een pointer naar het schaakstuk dat op rij r, kolom k staat
  * Als er geen schaakstuk staat op deze positie, geef nullptr terug
  */
-SchaakStuk* Game::getPiece(int r, int k) {
+ChessPiece* Game::getPiece(int r, int k) {
     return board[r][k];
 }
 
@@ -59,7 +59,7 @@ SchaakStuk* Game::getPiece(int r, int k) {
  * Bewaar in jouw datastructuur de *pointer* naar het schaakstuk,
  * niet het schaakstuk zelf.
  */
-void Game::setPiece(int r, int k, SchaakStuk* s)
+void Game::setPiece(int r, int k, ChessPiece* s)
 {
     board[r][k] = s;
 }

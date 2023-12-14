@@ -11,13 +11,13 @@ class Game;
 
 enum zw{zwart,wit};
 
-class SchaakStuk {
+class ChessPiece {
 public:
-    SchaakStuk(zw kleur): kleur(kleur) {}
+    ChessPiece(zw kleur): kleur(kleur) {}
 
     virtual Piece piece() const=0;      // Verander deze functie niet!
                                         // Deze functie wordt gebruikt door
-                                        // setItem(x,y,SchaakStuk*) van
+                                        // setItem(x,y,ChessPiece*) van
                                         // SchaakGUI
 
     zw getKleur() const { return kleur; }
@@ -25,53 +25,53 @@ private:
     zw kleur;
 };
 
-class Pion:public SchaakStuk {
+class Pion:public ChessPiece {
 public:
-    Pion(zw kleur):SchaakStuk(kleur) {}
+    Pion(zw kleur): ChessPiece(kleur) {}
     virtual Piece piece() const override {
         return Piece(Piece::Pawn,getKleur()==wit?Piece::White:Piece::Black);
     }
 };
 
-class Toren:public SchaakStuk {
+class Toren:public ChessPiece {
 public:
-    Toren(zw kleur):SchaakStuk(kleur) {}
+    Toren(zw kleur): ChessPiece(kleur) {}
 
     Piece piece() const override {
         return Piece(Piece::Rook,getKleur()==wit?Piece::White:Piece::Black);
     }
 };
 
-class Paard:public SchaakStuk {
+class Paard:public ChessPiece {
 public:
-    Paard(zw kleur):SchaakStuk(kleur) {}
+    Paard(zw kleur): ChessPiece(kleur) {}
 
     Piece piece() const override {
         return Piece(Piece::Knight,getKleur()==wit?Piece::White:Piece::Black);
     }
 };
 
-class Loper:public SchaakStuk {
+class Loper:public ChessPiece {
 public:
-    Loper(zw kleur):SchaakStuk(kleur) {}
+    Loper(zw kleur): ChessPiece(kleur) {}
 
     Piece piece() const override {
         return Piece(Piece::Bishop,getKleur()==wit?Piece::White:Piece::Black);
     }
 };
 
-class Koning:public SchaakStuk {
+class Koning:public ChessPiece {
 public:
-    Koning(zw kleur):SchaakStuk(kleur) {}
+    Koning(zw kleur): ChessPiece(kleur) {}
 
     Piece piece() const override {
         return Piece(Piece::King,getKleur()==wit?Piece::White:Piece::Black);
     }
 };
 
-class Koningin:public SchaakStuk {
+class Koningin:public ChessPiece {
 public:
-    Koningin(zw kleur):SchaakStuk(kleur) {}
+    Koningin(zw kleur): ChessPiece(kleur) {}
 
     Piece piece() const override {
         return Piece(Piece::Queen,getKleur()==wit?Piece::White:Piece::Black);

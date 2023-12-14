@@ -28,15 +28,15 @@ void SchaakGUI::clicked(int r, int k) {
 
     // Volgende schaakstukken worden aangemaakt om het voorbeeld te illustreren.
     // In jouw geval zullen de stukken uit game g komen
-    SchaakStuk* p1=new Pion(zwart);
-    SchaakStuk* p2=new Pion(zwart);
-    SchaakStuk* Q=new Koningin(zwart);
-    SchaakStuk* K=new Koning(zwart);
+    ChessPiece* p1=new Pion(zwart);
+    ChessPiece* p2=new Pion(zwart);
+    ChessPiece* Q=new Koningin(zwart);
+    ChessPiece* K=new Koning(zwart);
 
-    SchaakStuk* p3=new Pion(wit);
-    SchaakStuk* P=new Paard(wit);
-    SchaakStuk* L=new Loper(wit);
-    SchaakStuk* Kw=new Koning(wit);
+    ChessPiece* p3=new Pion(wit);
+    ChessPiece* P=new Paard(wit);
+    ChessPiece* L=new Loper(wit);
+    ChessPiece* Kw=new Koning(wit);
 
 
     removeAllMarking();  // Alle markeringen weg

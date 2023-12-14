@@ -17,16 +17,16 @@ public:
 
     bool move(SchaakStuk* s,int r, int k); // Verplaats stuk s naar rij r en kolom k
 
-    bool schaak(zw kleur);
-    bool schaakmat(zw kleur);
-    bool pat(zw kleur);
+    bool inCheck(zw kleur);
+    bool checkMate(zw kleur);
+    bool staleMate(zw kleur);
     void setStartBord();
 
     SchaakStuk* getPiece(int r, int k);
     void setPiece(int r, int k, SchaakStuk* s);
 
 private:
-    // Hier zet jij jouw datastructuur neer om het bord te bewaren ...
+    SchaakStuk* board[8][8];
 };
 
 #endif //SCHAKEN_GAME_H

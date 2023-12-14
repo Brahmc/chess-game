@@ -10,7 +10,33 @@ Game::Game() {}
 Game::~Game() {}
 
 // Zet het bord klaar; voeg de stukken op de jusite plaats toe
-void Game::setStartBord() {}
+void Game::setStartBord() {
+    clearBoard();
+
+    for (int i = 0; i < 8; i+= 7) {
+        zw color = i == 0 ? zwart : wit;
+        board[i][0] = new Rook(color);
+        board[i][1] = new Knight(color);
+        board[i][2] = new Bishop(color);
+        board[i][3] = new Queen(color);
+        board[i][4] = new King(color);
+        board[i][5] = new Bishop(color);
+        board[i][6] = new Knight(color);
+        board[i][7] = new Rook(color);
+    }
+    for (int i = 0; i < 8; i++) {
+        board[1][i] = new Pawn(zwart);
+        board[6][i] = new Pawn(wit);
+    }
+}
+
+void Game::clearBoard() {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            board[i][j] = nullptr;
+        }
+    }
+}
 
 /* Verplaats stuk s naar positie (r,k)
  * Als deze move niet mogelijk is, wordt false teruggegeven

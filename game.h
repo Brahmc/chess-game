@@ -27,6 +27,8 @@ public:
 
 private:
     ChessPiece* board[8][8];
+
+    void clearBoard();
 };
 
 #endif //SCHAKEN_GAME_H

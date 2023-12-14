@@ -101,7 +101,7 @@ void ChessWindow::clearBoard() {
     scene->clearBoard();
 }
 
-void ChessWindow::setItem(int i, int j, SchaakStuk* p) {
+void ChessWindow::setItem(int i, int j,ChessPiece* p) {
     scene->setItem(i,j,p->piece());
 }
 

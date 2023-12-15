@@ -66,15 +66,15 @@ bool Game::move(ChessPiece* s, int r, int k) {
 }
 
 // Geeft true als kleur inCheck staat
-bool Game::inCheck(zw kleur) {
+bool Game::inCheck(zw kleur) const {
 
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             ChessPiece* p = getPiece(i, j);
             if (p == nullptr || p->getKleur() == kleur) continue;
             for (auto move : p->getMoves(i, j, *this)) {
-                auto chessPiece = board[move.first][move.second] = p;
-                if (chessPiece->piece().type() == Piece::King && chessPiece->getKleur() != kleur) {
+                auto chessPiece = board[move.first][move.second];
+                if (chessPiece != nullptr && chessPiece->piece().type() == Piece::King && chessPiece->getKleur() == kleur) {
                     return true;
                 }
             }

@@ -17,7 +17,7 @@ public:
 
     bool move(ChessPiece* s, int r, int k); // Verplaats stuk s naar rij r en kolom k
 
-    bool inCheck(zw kleur);
+    bool inCheck(zw kleur) const;
     bool checkMate(zw kleur);
     bool staleMate(zw kleur);
     void setStartBord();
@@ -31,6 +31,7 @@ private:
     ChessPiece* board[8][8];
 
     void clearBoard();
+
 };
 
 #endif //SCHAKEN_GAME_H

@@ -65,46 +65,50 @@ void removeDiscoveredCheckMoves(std::vector<std::pair<int, int>> &moves, ChessPi
 
     auto kingPos = g.getPosition(Piece::King, p->getKleur());
 
-    std::vector<std::pair<int, int>> discoveredCheckPiecePos;
+    std::vector<std::pair<int, int>> discoveredCheckPieceOrth;
+    std::vector<std::pair<int, int>> discoveredCheckPieceDia;
     g.setPiece(r, k, nullptr);
-    addOrthogonalMoves(discoveredCheckPiecePos, p, kingPos.first, kingPos.second, g);
-    addDiagonalMoves(discoveredCheckPiecePos, p, kingPos.first, kingPos.second, g);
+    addOrthogonalMoves(discoveredCheckPieceOrth, p, kingPos.first, kingPos.second, g);
+    addDiagonalMoves(discoveredCheckPieceDia, p, kingPos.first, kingPos.second, g);
 
     // remove positions that don't have a discovered check piece
-    for (auto it = discoveredCheckPiecePos.begin();it != discoveredCheckPiecePos.end();) {
+    for (auto it = discoveredCheckPieceOrth.begin(); it != discoveredCheckPieceOrth.end();) {
         ChessPiece* piece = g.getPiece(it->first, it->second);
         if (piece == nullptr || piece->getKleur() == p->getKleur() || discoveredCheckPieces.find(piece->piece().type()) == discoveredCheckPieces.end()) {
-            it = discoveredCheckPiecePos.erase(it);
-        } else {
-            it++;
-        }
+            it = discoveredCheckPieceOrth.erase(it);
+        } else it++;
+    }
+
+    for (auto it = discoveredCheckPieceDia.begin(); it != discoveredCheckPieceDia.end();) {
+        ChessPiece* piece = g.getPiece(it->first, it->second);
+        if (piece == nullptr || piece->getKleur() == p->getKleur() || discoveredCheckPieces.find(piece->piece().type()) == discoveredCheckPieces.end()) {
+            it = discoveredCheckPieceDia.erase(it);
+        } else it++;
     }
     g.setPiece(r, k , p);
 
-    if (discoveredCheckPiecePos.empty()) return;
-
-    if (discoveredCheckPiecePos.size() > 1) { // King is in check by 2 pieces
+    size_t amount = discoveredCheckPieceOrth.size() + discoveredCheckPieceDia.size();
+    if (amount == 0) return;
+    if (amount > 1) { // King is in check by 2 pieces
         moves.clear();
         return;
     }
 
     // Remove moves that don't block the discovered check piece
-    auto threatPos = discoveredCheckPiecePos[0];
-    if (threatPos.first != kingPos.first && threatPos.second != kingPos.second) { // Pos of thread is diagonal
+    auto threatPos = discoveredCheckPieceOrth[0];
+    for (auto it = moves.begin(); it != moves.end();) {
+        if (threatPos.first - it->first != threatPos.second - it->second || // Move is not on the same diagonal
+                ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) ) ) { // Move is not in the same direction
+            it = moves.erase(it);
+        } else it++;
+    }
 
-        for (auto it = moves.begin(); it != moves.end();) {
-            if (threatPos.first - it->first != threatPos.second - it->second || // Move is not on the same diagonal
-                    ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) ) ) { // Move is not in the same direction
-                it = moves.erase(it);
-            } else it++;
-        }
-    } else { // Pos of thread is orthogonal
-        for (auto it = moves.begin(); it != moves.end(); ) {
-            if ((threatPos.first == kingPos.first) != (it->first == kingPos.first) || (threatPos.second == kingPos.second) != (it->second == kingPos.second) // Move is not on the same orthogonal
-                || ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) )) {  // Move is not in the same direction
-                it = moves.erase(it);
-            } else it++;
-        }
+    threatPos = discoveredCheckPieceDia[0];
+    for (auto it = moves.begin(); it != moves.end(); ) {
+        if ((threatPos.first == kingPos.first) != (it->first == kingPos.first) || (threatPos.second == kingPos.second) != (it->second == kingPos.second) // Move is not on the same orthogonal
+            || ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) )) {  // Move is not in the same direction
+            it = moves.erase(it);
+        } else it++;
     }
 }
 
@@ -147,7 +151,7 @@ std::vector<std::pair<int, int>> King::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
     for (int i = r - 1; i < r + 2; i++) {
         for (int j = k - 1; j < k + 2; j++) {
-        if (i == r && j == k) continue;
+        if (i == r && j == k || !isInBounds(i, j)) continue;
         ChessPiece* piece = g.getPiece(i, j);
             if (piece == nullptr || piece->getKleur() != getKleur()) {
                 moves.emplace_back(i, j);
@@ -191,6 +195,26 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
         if (piece == nullptr) {
             moves.emplace_back(newR, k);
         }
+    }
+    return moves;
+}
+
+std::vector<std::pair<int, int>> King::getAllowedMoves(int r, int k, Game &g) {
+    std::vector<std::pair<int, int>> moves = getMoves(r, k, g);
+
+    // could be optimized
+    auto it = moves.begin();
+    while (it < moves.end()) {
+        int newR = it->first;
+        int newK = it->second;
+        g.setPiece(newR, newK, this);
+        g.setPiece(r, k, nullptr);
+        if (g.inCheck(getKleur())) {
+            it = moves.erase(it);
+        } else it++;
+
+        g.setPiece(newR, newK, nullptr);
+        g.setPiece(r, k, this);
     }
     return moves;
 }

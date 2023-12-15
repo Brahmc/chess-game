@@ -185,15 +185,13 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
     }
 
     for (int i = -1; i <= 1; i += 2) {
-        ChessPiece* p = g.getPiece(r, k + i);
-        if (p != nullptr && p->getColor() != getColor() && p->piece().type() == Piece::Pawn) {
-            Pawn* pawn = dynamic_cast<Pawn*>(p);
-            if (pawn->enPassantCapturable) {
-                moves.emplace_back(r + dir, k + i);
-            }
+        Pawn* pawn = dynamic_cast<Pawn*>(g.getPiece(r, k + i));
+        if (pawn != nullptr && pawn->getColor() != getColor() && pawn->enPassantCapturable) {
+            moves.emplace_back(r + dir, k + i);
         }
     }
 
+    if (r != 6 && r != 1) return moves;
     newR += dir;
     if (isInBounds(newR, k)) {
         ChessPiece* p = g.getPiece(newR, k);
@@ -223,10 +221,9 @@ std::vector<std::pair<int, int>> King::getAllowedMoves(int r, int k, Game &g) {
     if (hasMoved) return moves;
 
     for (int n = 0; n < 2; n++){
-        ChessPiece* cp = g.getPiece(r, n ? 0 : 7);
-        if (cp == nullptr || cp->piece().type() != Piece::Rook) continue;
+        Rook* rook = dynamic_cast<Rook*>(g.getPiece(r, n ? 0 : 7));
+        if (rook == nullptr) continue;
 
-        Rook* rook = dynamic_cast<Rook*>(cp);
         if (rook->hasMoved()) continue;
         bool canCastle = true;
         for (int i = (n ? 1 : 5); i < (n ? 4 : 7); i++) {
@@ -255,15 +252,11 @@ void ChessPiece::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {}
 void Pawn::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
     enPassantCapturable = std::abs(r - newR) == 2;
 
-    if (newR != r) {
-        for (int i = -1; i <= 1; i += 2) {
-            ChessPiece* p = g.getPiece(r, k + i);
-            if (p != nullptr && p->getColor() != getColor() && p->piece().type() == Piece::Pawn) {
-                Pawn* pawn = dynamic_cast<Pawn*>(p);
-                if (pawn->enPassantCapturable) {
-                    g.setPiece(r, k + i, nullptr);
-                }
-            }
+    if (newR == r) return;
+    for (int i = -1; i <= 1; i += 2) {
+        Pawn* pawn = dynamic_cast<Pawn*>(g.getPiece(r, k + i));
+        if (pawn != nullptr && pawn->getColor() != getColor() && pawn->enPassantCapturable) {
+            g.setPiece(r, k + i, nullptr);
         }
     }
 }

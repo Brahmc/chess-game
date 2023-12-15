@@ -219,6 +219,27 @@ std::vector<std::pair<int, int>> King::getAllowedMoves(int r, int k, Game &g) {
         g.setPiece(newR, newK, replaced);
         g.setPiece(r, k, this);
     }
+
+    if (hasMoved) return moves;
+
+    for (int n = 0; n < 2; n++){
+        ChessPiece* cp = g.getPiece(r, n ? 0 : 7);
+        if (cp == nullptr || cp->piece().type() != Piece::Rook) continue;
+
+        Rook* rook = dynamic_cast<Rook*>(cp);
+        if (rook->hasMoved()) continue;
+        bool canCastle = true;
+        for (int i = (n ? 1 : 5); i < (n ? 4 : 7); i++) {
+            if (g.getPiece(r, i) != nullptr) {
+                canCastle = false;
+                break;
+            }
+        }
+        if (canCastle) {
+            moves.emplace_back(r, n ? 2 : 6);
+        }
+    }
+
     return moves;
 }
 
@@ -248,9 +269,16 @@ void Pawn::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
 }
 
 void Rook::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
-    hasMoved = true;
+    moved = true;
 }
 
 void King::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
     hasMoved = true;
+
+    if (std::abs(newK - k) == 2) { // castle
+        int rookK = k - newK > 0 ? 0 : 7;
+        ChessPiece* rook = g.getPiece(r, rookK);
+        g.setPiece(r, rookK, nullptr);
+        g.setPiece(r, k - newK > 0 ? 3 : 5, rook);
+    }
 }

@@ -51,8 +51,10 @@ public:
 
     void triggerMoveEvent(int r, int k, int newR, int newK, Game &g) override;
 
+    [[nodiscard]] bool hasMoved() const { return moved; }
+
 private:
-    bool hasMoved = false;
+    bool moved = false;
 };
 
 class Knight: public ChessPiece {

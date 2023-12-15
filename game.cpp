@@ -62,6 +62,7 @@ bool Game::move(ChessPiece* s, int r, int k) {
     if (std::find(moves.begin(), moves.end(), std::make_pair(r, k)) == moves.end()) return false;
     board[currentR][currentK] = nullptr;
     board[r][k] = s;
+    s->triggerMoveEvent(currentR, currentK, r, k, *this);
     return true;
 }
 

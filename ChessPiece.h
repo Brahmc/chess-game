@@ -18,10 +18,12 @@ public:
     virtual Piece piece() const=0;
     virtual std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) = 0;
     virtual std::vector<std::pair<int, int>> getAllowedMoves(int r, int k, Game &g);
+    virtual void triggerMoveEvent(int r, int k, int newR, int newK, Game &g);
 
     zw getKleur() const { return kleur; }
 private:
     zw kleur;
+
 };
 
 class Pawn: public ChessPiece {
@@ -31,6 +33,11 @@ public:
         return Piece(Piece::Pawn, getKleur() == wit ? Piece::White : Piece::Black);
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
+
+    void triggerMoveEvent(int r, int k, int newR, int newK, Game &g) override;
+
+private:
+    bool enPassantCapturable = false;
 };
 
 class Rook: public ChessPiece {
@@ -41,6 +48,11 @@ public:
         return Piece(Piece::Rook,getKleur()==wit?Piece::White:Piece::Black);
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
+
+    void triggerMoveEvent(int r, int k, int newR, int newK, Game &g) override;
+
+private:
+    bool hasMoved = false;
 };
 
 class Knight: public ChessPiece {
@@ -73,6 +85,11 @@ public:
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 
     std::vector<std::pair<int, int>> getAllowedMoves(int r, int k, Game &g) override;
+
+    void triggerMoveEvent(int r, int k, int newR, int newK, Game &g) override;
+
+private:
+    bool hasMoved = false;
 };
 
 class Queen: public ChessPiece {

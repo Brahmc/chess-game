@@ -165,11 +165,9 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
     int newR = r + dir;
     if (!isInBounds(newR, k)) return moves;
 
-    if (isInBounds(newR, k)) {
-        ChessPiece* piece = g.getPiece(newR, k);
-        if (piece == nullptr) {
-            moves.emplace_back(newR, k);
-        }
+    {
+        ChessPiece* p = g.getPiece(newR, k);
+        if (p == nullptr) moves.emplace_back(newR, k);
     }
 
     if (k < 7) {
@@ -186,13 +184,20 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
         }
     }
 
-    if (r != 1 && r != 6) return moves;
+    for (int i = -1; i <= 1; i += 2) {
+        ChessPiece* p = g.getPiece(r, k + i);
+        if (p != nullptr && p->getKleur() != getKleur() && p->piece().type() == Piece::Pawn) {
+            Pawn* pawn = dynamic_cast<Pawn*>(p);
+            if (pawn->enPassantCapturable) {
+                moves.emplace_back(r + dir, k + i);
+            }
+        }
+    }
+
     newR += dir;
     if (isInBounds(newR, k)) {
-        ChessPiece* piece = g.getPiece(newR, k);
-        if (piece == nullptr) {
-            moves.emplace_back(newR, k);
-        }
+        ChessPiece* p = g.getPiece(newR, k);
+        if (p == nullptr) moves.emplace_back(newR, k);
     }
     return moves;
 }
@@ -222,4 +227,30 @@ std::vector<std::pair<int, int>> ChessPiece::getAllowedMoves(int r, int k, Game 
     std::vector<std::pair<int, int>> moves = getMoves(r, k, g);
     removeDiscoveredCheckMoves(moves, this, r, k, g);
     return moves;
+}
+
+void ChessPiece::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {}
+
+void Pawn::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
+    enPassantCapturable = std::abs(r - newR) == 2;
+
+    if (newR != r) {
+        for (int i = -1; i <= 1; i += 2) {
+            ChessPiece* p = g.getPiece(r, k + i);
+            if (p != nullptr && p->getKleur() != getKleur() && p->piece().type() == Piece::Pawn) {
+                Pawn* pawn = dynamic_cast<Pawn*>(p);
+                if (pawn->enPassantCapturable) {
+                    g.setPiece(r, k + i, nullptr);
+                }
+            }
+        }
+    }
+}
+
+void Rook::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
+    hasMoved = true;
+}
+
+void King::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
+    hasMoved = true;
 }

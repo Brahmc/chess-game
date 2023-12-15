@@ -47,7 +47,7 @@ bool Game::move(ChessPiece* s, int r, int k) {
     int currentR;
     int currentK;
     bool found = false;
-    for (int i = 0; i < 8 && !found; i++)
+    for (int i = 0; i < 8 && !found; i++) {
         for (int j = 0; j < 8; j++){
             if (board[i][j] == s) {
                 found = true;
@@ -56,6 +56,7 @@ bool Game::move(ChessPiece* s, int r, int k) {
                 break;
             }
         }
+    }
 
     std::vector<std::pair<int, int>> moves = s->getMoves(currentR, currentK, *this);
     if (std::find(moves.begin(), moves.end(), std::make_pair(r, k)) == moves.end()) return false;
@@ -93,7 +94,7 @@ bool Game::staleMate(zw kleur) {
 /* Geeft een pointer naar het schaakstuk dat op rij r, kolom k staat
  * Als er geen schaakstuk staat op deze positie, geef nullptr terug
  */
-ChessPiece* Game::getPiece(int r, int k) {
+ChessPiece* Game::getPiece(int r, int k) const {
     return board[r][k];
 }
 

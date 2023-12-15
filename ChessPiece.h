@@ -16,7 +16,7 @@ public:
     ChessPiece(zw kleur): kleur(kleur) {}
 
     virtual Piece piece() const=0;
-    virtual std::vector<std::pair<int, int>> getMoves(int r, int k, Game& g) = 0;
+    virtual std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) = 0;
 
     zw getKleur() const { return kleur; }
 private:
@@ -29,7 +29,7 @@ public:
     virtual Piece piece() const override {
         return Piece(Piece::Pawn, getKleur() == wit ? Piece::White : Piece::Black);
     }
-    std::vector<std::pair<int, int>> getMoves(int r, int k, Game &g) override;
+    std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
 class Rook: public ChessPiece {
@@ -39,7 +39,7 @@ public:
     Piece piece() const override {
         return Piece(Piece::Rook,getKleur()==wit?Piece::White:Piece::Black);
     }
-    std::vector<std::pair<int, int>> getMoves(int r, int k, Game &g) override;
+    std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
 class Knight: public ChessPiece {
@@ -49,7 +49,7 @@ public:
     Piece piece() const override {
         return Piece(Piece::Knight,getKleur()==wit?Piece::White:Piece::Black);
     }
-    std::vector<std::pair<int, int>> getMoves(int r, int k, Game &g) override;
+    std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
 class Bishop: public ChessPiece {
@@ -59,7 +59,7 @@ public:
     Piece piece() const override {
         return Piece(Piece::Bishop,getKleur()==wit?Piece::White:Piece::Black);
     }
-    std::vector<std::pair<int, int>> getMoves(int r, int k, Game &g) override;
+    std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
 class King: public ChessPiece {
@@ -69,7 +69,7 @@ public:
     Piece piece() const override {
         return Piece(Piece::King,getKleur()==wit?Piece::White:Piece::Black);
     }
-    std::vector<std::pair<int, int>> getMoves(int r, int k, Game &g) override;
+    std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
 class Queen: public ChessPiece {
@@ -79,7 +79,7 @@ public:
     Piece piece() const override {
         return Piece(Piece::Queen,getKleur()==wit?Piece::White:Piece::Black);
     }
-    std::vector<std::pair<int, int>> getMoves(int r, int k, Game &g) override;
+    std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
 #endif //SCHAKEN_SCHAAKSTUK_H

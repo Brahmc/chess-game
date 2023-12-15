@@ -22,7 +22,7 @@ public:
     bool staleMate(zw kleur);
     void setStartBord();
 
-    ChessPiece* getPiece(int r, int k);
+    [[nodiscard]] ChessPiece* getPiece(int r, int k) const;
     void setPiece(int r, int k, ChessPiece* s);
 
 private:

@@ -10,7 +10,7 @@ bool isInBounds(int r, int k) {
     return r >= 0 && r < 8 && k >= 0 && k < 8;
 }
 
-void addOrthogonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, Game &g) {
+void addOrthogonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, const Game &g) {
     for (int n = 0; n < 4; n++ ) {
         int start = n < 2 ? r : k;
         int dir = n % 2 == 0 ? 1 : -1;
@@ -35,7 +35,7 @@ void addOrthogonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, 
     }
 }
 
-void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, Game &g) {
+void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, const Game &g) {
     for (int n = 0; n < 4; n++ ) {
         int dirR = n < 2 ? 1 : -1;
         int dirK = n % 2 == 0 ? 1 : -1;
@@ -60,13 +60,13 @@ void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, in
 }
 
 
-std::vector<std::pair<int, int>> Rook::getMoves(int r, int k, Game &g) {
+std::vector<std::pair<int, int>> Rook::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
     addOrthogonalMoves(moves, this, r, k, g);
     return moves;
 }
 
-std::vector<std::pair<int, int>> Knight::getMoves(int r, int k, Game &g) {
+std::vector<std::pair<int, int>> Knight::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
     for (int n = 0; n < 8; n++) {
         int newR = r + (n % 4 < 2 ? 1 : -1) * (n < 4 ? 2 : 1);
@@ -82,20 +82,20 @@ std::vector<std::pair<int, int>> Knight::getMoves(int r, int k, Game &g) {
     return moves;
 }
 
-std::vector<std::pair<int, int>> Bishop::getMoves(int r, int k, Game &g) {
+std::vector<std::pair<int, int>> Bishop::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
     addDiagonalMoves(moves, this, r, k, g);
     return moves;
 }
 
-std::vector<std::pair<int, int>> Queen::getMoves(int r, int k, Game &g) {
+std::vector<std::pair<int, int>> Queen::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
     addOrthogonalMoves(moves, this, r, k, g);
     addDiagonalMoves(moves, this, r, k, g);
     return moves;
 }
 
-std::vector<std::pair<int, int>> King::getMoves(int r, int k, Game &g) {
+std::vector<std::pair<int, int>> King::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
     for (int i = r - 1; i < r + 2; i++) {
         for (int j = k - 1; j < k + 2; j++) {
@@ -109,7 +109,7 @@ std::vector<std::pair<int, int>> King::getMoves(int r, int k, Game &g) {
     return moves;
 }
 
-std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, Game &g) {
+std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
     int dir = getKleur() == wit ? -1 : 1;
     int newR = r + dir;

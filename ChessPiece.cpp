@@ -96,7 +96,17 @@ std::vector<std::pair<int, int>> Queen::getMoves(int r, int k, Game &g) {
 }
 
 std::vector<std::pair<int, int>> King::getMoves(int r, int k, Game &g) {
-
+    std::vector<std::pair<int, int>> moves;
+    for (int i = r - 1; i < r + 2; i++) {
+        for (int j = k - 1; j < k + 2; j++) {
+        if (i == r && j == k) continue;
+        ChessPiece* piece = g.getPiece(i, j);
+            if (piece == nullptr || piece->getKleur() != getKleur()) {
+                moves.emplace_back(i, j);
+            }
+        }
+    }
+    return moves;
 }
 
 std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, Game &g) {

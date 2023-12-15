@@ -69,6 +69,7 @@ void removeDiscoveredCheckMoves(std::vector<std::pair<int, int>> &moves, ChessPi
     g.setPiece(r, k, nullptr);
     addOrthogonalMoves(discoveredCheckPieceOrth, p, kingPos.first, kingPos.second, g, true);
     addDiagonalMoves(discoveredCheckPieceDia, p, kingPos.first, kingPos.second, g, true);
+    g.setPiece(r, k , p);
 
     for (auto it = discoveredCheckPieceOrth.begin(); it != discoveredCheckPieceOrth.end();) {
         auto pt = g.getPiece(it->first, it->second)->piece().type();
@@ -82,7 +83,6 @@ void removeDiscoveredCheckMoves(std::vector<std::pair<int, int>> &moves, ChessPi
             it = discoveredCheckPieceDia.erase(it);
         } else it++;
     }
-    g.setPiece(r, k , p);
 
     size_t amount = discoveredCheckPieceOrth.size() + discoveredCheckPieceDia.size();
     if (amount > 1) { // King is in check by 2 pieces
@@ -99,7 +99,7 @@ void removeDiscoveredCheckMoves(std::vector<std::pair<int, int>> &moves, ChessPi
                 it = moves.erase(it);
             } else it++;
         }
-    } else {
+    } else if (discoveredCheckPieceOrth.size() == 1) {
         auto threatPos = discoveredCheckPieceOrth[0];
         for (auto it = moves.begin(); it != moves.end(); ) {
             if ((threatPos.first == kingPos.first) != (it->first == kingPos.first) || (threatPos.second == kingPos.second) != (it->second == kingPos.second) // Move is not on the same orthogonal

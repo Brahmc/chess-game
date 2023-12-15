@@ -3,6 +3,7 @@
 //  Opmerkingen: (bvb aanpassingen van de opgave)
 //
 
+#include <unordered_set>
 #include "ChessPiece.h"
 #include "Game.h"
 
@@ -59,6 +60,53 @@ void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, in
     }
 }
 
+void removeDiscoveredCheckMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, Game &g) {
+    static const std::unordered_set<Piece::Type> discoveredCheckPieces = {Piece::Queen, Piece::Rook, Piece::Bishop};
+
+    auto kingPos = g.getPosition(Piece::King, p->getKleur());
+
+    std::vector<std::pair<int, int>> discoveredCheckPiecePos;
+    g.setPiece(r, k, nullptr);
+    addOrthogonalMoves(discoveredCheckPiecePos, p, kingPos.first, kingPos.second, g);
+    addDiagonalMoves(discoveredCheckPiecePos, p, kingPos.first, kingPos.second, g);
+
+    // remove positions that don't have a discovered check piece
+    for (auto it = discoveredCheckPiecePos.begin();it != discoveredCheckPiecePos.end();) {
+        ChessPiece* piece = g.getPiece(it->first, it->second);
+        if (piece == nullptr || piece->getKleur() == p->getKleur() || discoveredCheckPieces.find(piece->piece().type()) == discoveredCheckPieces.end()) {
+            it = discoveredCheckPiecePos.erase(it);
+        } else {
+            it++;
+        }
+    }
+    g.setPiece(r, k , p);
+
+    if (discoveredCheckPiecePos.empty()) return;
+
+    if (discoveredCheckPiecePos.size() > 1) { // King is in check by 2 pieces
+        moves.clear();
+        return;
+    }
+
+    // Remove moves that don't block the discovered check piece
+    auto move = discoveredCheckPiecePos[0];
+    if (move.first != r && move.second != k) { // Piece is diagonal
+
+        for (auto it = moves.begin(); it != moves.end();) {
+            if (move.first - it->first != move.second - it->second || // Move is not on the same diagonal
+                    ( (move.first < r) != (it->first < r) || (move.second < r) != (it->second < r) ) ) { // Move is not in the same direction
+                it = moves.erase(it);
+            } else it++;
+        }
+    } else {
+        for (auto it = moves.begin(); it != moves.end(); ) {
+            if ((move.first == r) != (it->first == r) || (move.second == k) != (it->second == k) // Move is not on the same orthogonal
+                || ( (move.first < r) != (it->first < r) || (move.second < r) != (it->second < r) )) {  // Move is not in the same direction
+                it = moves.erase(it);
+            } else it++;
+        }
+    }
+}
 
 std::vector<std::pair<int, int>> Rook::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
@@ -148,4 +196,8 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
 }
 
 
-
+std::vector<std::pair<int, int>> ChessPiece::getAllowedMoves(int r, int k, Game &g) {
+    std::vector<std::pair<int, int>> moves = getMoves(r, k, g);
+    removeDiscoveredCheckMoves(moves, this, r, k, g);
+    return moves;
+}

@@ -44,7 +44,7 @@ void SchaakGUI::clicked(int r, int k) {
     ChessPiece* piece = g.getPiece(r, k);
     if (piece == nullptr) return;
     setTileSelect(r, k,true);
-    std::vector<std::pair<int, int>> moves = piece->getMoves(r, k, g);
+    std::vector<std::pair<int, int>> moves = piece->getAllowedMoves(r, k, g);
     for (auto move : moves) {
         setTileFocus(move.first, move.second, true);
     }

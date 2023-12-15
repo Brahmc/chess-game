@@ -25,6 +25,8 @@ public:
     [[nodiscard]] ChessPiece* getPiece(int r, int k) const;
     void setPiece(int r, int k, ChessPiece* s);
 
+    std::pair<int, int> getPosition(Piece::Type type, zw kleur) const;
+
 private:
     ChessPiece* board[8][8];
 

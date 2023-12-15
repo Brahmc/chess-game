@@ -17,6 +17,7 @@ public:
 
     virtual Piece piece() const=0;
     virtual std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) = 0;
+    std::vector<std::pair<int, int>> getAllowedMoves(int r, int k, Game &g);
 
     zw getKleur() const { return kleur; }
 private:

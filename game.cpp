@@ -58,7 +58,7 @@ bool Game::move(ChessPiece* s, int r, int k) {
         }
     }
 
-    std::vector<std::pair<int, int>> moves = s->getMoves(currentR, currentK, *this);
+    std::vector<std::pair<int, int>> moves = s->getAllowedMoves(currentR, currentK, *this);
     if (std::find(moves.begin(), moves.end(), std::make_pair(r, k)) == moves.end()) return false;
     board[currentR][currentK] = nullptr;
     board[r][k] = s;
@@ -67,6 +67,19 @@ bool Game::move(ChessPiece* s, int r, int k) {
 
 // Geeft true als kleur inCheck staat
 bool Game::inCheck(zw kleur) {
+
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            ChessPiece* p = getPiece(i, j);
+            if (p == nullptr || p->getKleur() == kleur) continue;
+            for (auto move : p->getMoves(i, j, *this)) {
+                auto chessPiece = board[move.first][move.second] = p;
+                if (chessPiece->piece().type() == Piece::King && chessPiece->getKleur() != kleur) {
+                    return true;
+                }
+            }
+        }
+    }
     return false;
 }
 
@@ -106,4 +119,16 @@ ChessPiece* Game::getPiece(int r, int k) const {
 void Game::setPiece(int r, int k, ChessPiece* s)
 {
     board[r][k] = s;
+}
+
+std::pair<int, int> Game::getPosition(Piece::Type type, zw kleur) const {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++){
+            ChessPiece* p = board[i][j];
+            if (p != nullptr && p->piece().type() == type && p->getKleur() == kleur) {
+                return std::make_pair(i, j);
+            }
+        }
+    }
+    return std::make_pair(-1, -1);
 }

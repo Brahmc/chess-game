@@ -89,19 +89,19 @@ void removeDiscoveredCheckMoves(std::vector<std::pair<int, int>> &moves, ChessPi
     }
 
     // Remove moves that don't block the discovered check piece
-    auto move = discoveredCheckPiecePos[0];
-    if (move.first != r && move.second != k) { // Piece is diagonal
+    auto threatPos = discoveredCheckPiecePos[0];
+    if (threatPos.first != kingPos.first && threatPos.second != kingPos.second) { // Pos of thread is diagonal
 
         for (auto it = moves.begin(); it != moves.end();) {
-            if (move.first - it->first != move.second - it->second || // Move is not on the same diagonal
-                    ( (move.first < r) != (it->first < r) || (move.second < r) != (it->second < r) ) ) { // Move is not in the same direction
+            if (threatPos.first - it->first != threatPos.second - it->second || // Move is not on the same diagonal
+                    ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) ) ) { // Move is not in the same direction
                 it = moves.erase(it);
             } else it++;
         }
-    } else {
+    } else { // Pos of thread is orthogonal
         for (auto it = moves.begin(); it != moves.end(); ) {
-            if ((move.first == r) != (it->first == r) || (move.second == k) != (it->second == k) // Move is not on the same orthogonal
-                || ( (move.first < r) != (it->first < r) || (move.second < r) != (it->second < r) )) {  // Move is not in the same direction
+            if ((threatPos.first == kingPos.first) != (it->first == kingPos.first) || (threatPos.second == kingPos.second) != (it->second == kingPos.second) // Move is not on the same orthogonal
+                || ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) )) {  // Move is not in the same direction
                 it = moves.erase(it);
             } else it++;
         }

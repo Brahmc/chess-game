@@ -14,7 +14,7 @@ void Game::setStartBord() {
     clearBoard();
 
     for (int i = 0; i < 8; i+= 7) {
-        zw color = i == 0 ? zwart : wit;
+        zw color = i == 0 ? black : white;
         board[i][0] = new Rook(color);
         board[i][1] = new Knight(color);
         board[i][2] = new Bishop(color);
@@ -25,8 +25,8 @@ void Game::setStartBord() {
         board[i][7] = new Rook(color);
     }
     for (int i = 0; i < 8; i++) {
-        board[1][i] = new Pawn(zwart);
-        board[6][i] = new Pawn(wit);
+        board[1][i] = new Pawn(black);
+        board[6][i] = new Pawn(white);
     }
 }
 
@@ -72,10 +72,11 @@ bool Game::inCheck(zw kleur) const {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             ChessPiece* p = getPiece(i, j);
-            if (p == nullptr || p->getKleur() == kleur) continue;
+            if (p == nullptr || p->getColor() == kleur) continue;
             for (auto move : p->getMoves(i, j, *this)) {
                 auto chessPiece = board[move.first][move.second];
-                if (chessPiece != nullptr && chessPiece->piece().type() == Piece::King && chessPiece->getKleur() == kleur) {
+                if (chessPiece != nullptr && chessPiece->piece().type() == Piece::King &&
+                        chessPiece->getColor() == kleur) {
                     return true;
                 }
             }
@@ -129,7 +130,7 @@ std::pair<int, int> Game::getPosition(Piece::Type type, zw kleur) const {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++){
             ChessPiece* p = board[i][j];
-            if (p != nullptr && p->piece().type() == type && p->getKleur() == kleur) {
+            if (p != nullptr && p->piece().type() == type && p->getColor() == kleur) {
                 return std::make_pair(i, j);
             }
         }

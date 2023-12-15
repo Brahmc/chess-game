@@ -27,7 +27,7 @@ void addOrthogonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, 
             if (piece == nullptr && !captureOnly) {
                 moves.emplace_back(newR, newK);
             } else if (piece != nullptr) {
-                if (piece->getKleur() != p->getKleur()) {
+                if (piece->getColor() != p->getColor()) {
                     moves.emplace_back(newR, newK);
                 }
                 break;
@@ -51,7 +51,7 @@ void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, in
             if (piece == nullptr && !captureOnly) {
                 moves.emplace_back(newR, newK);
             } else if (piece != nullptr) {
-                if (piece->getKleur() != p->getKleur()) {
+                if (piece->getColor() != p->getColor()) {
                     moves.emplace_back(newR, newK);
                 }
                 break;
@@ -61,7 +61,7 @@ void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, in
 }
 
 void removeDiscoveredCheckMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, Game &g) {
-    auto kingPos = g.getPosition(Piece::King, p->getKleur());
+    auto kingPos = g.getPosition(Piece::King, p->getColor());
 
     std::vector<std::pair<int, int>> discoveredCheckPieceOrth;
     std::vector<std::pair<int, int>> discoveredCheckPieceDia;
@@ -124,7 +124,7 @@ std::vector<std::pair<int, int>> Knight::getMoves(int r, int k, const Game &g) {
 
         if (isInBounds(newR, newK)) {
             ChessPiece* piece = g.getPiece(newR, newK);
-            if (piece == nullptr || piece->getKleur() != getKleur()) {
+            if (piece == nullptr || piece->getColor() != getColor()) {
                 moves.emplace_back(newR, newK);
             }
         }
@@ -151,7 +151,7 @@ std::vector<std::pair<int, int>> King::getMoves(int r, int k, const Game &g) {
         for (int j = k - 1; j < k + 2; j++) {
         if (i == r && j == k || !isInBounds(i, j)) continue;
         ChessPiece* piece = g.getPiece(i, j);
-            if (piece == nullptr || piece->getKleur() != getKleur()) {
+            if (piece == nullptr || piece->getColor() != getColor()) {
                 moves.emplace_back(i, j);
             }
         }
@@ -161,7 +161,7 @@ std::vector<std::pair<int, int>> King::getMoves(int r, int k, const Game &g) {
 
 std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
-    int dir = getKleur() == wit ? -1 : 1;
+    int dir = getColor() == white ? -1 : 1;
     int newR = r + dir;
     if (!isInBounds(newR, k)) return moves;
 
@@ -172,21 +172,21 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
 
     if (k < 7) {
         ChessPiece* p = g.getPiece(r+ dir, k + 1);
-        if (p != nullptr && p->getKleur() != getKleur()) {
+        if (p != nullptr && p->getColor() != getColor()) {
             moves.emplace_back(r+ dir, k + 1);
         }
     }
 
     if (k > 1) {
         ChessPiece* p = g.getPiece(r+ dir, k - 1);
-        if (p != nullptr && p->getKleur() != getKleur()) {
+        if (p != nullptr && p->getColor() != getColor()) {
             moves.emplace_back(r + dir, k - 1);
         }
     }
 
     for (int i = -1; i <= 1; i += 2) {
         ChessPiece* p = g.getPiece(r, k + i);
-        if (p != nullptr && p->getKleur() != getKleur() && p->piece().type() == Piece::Pawn) {
+        if (p != nullptr && p->getColor() != getColor() && p->piece().type() == Piece::Pawn) {
             Pawn* pawn = dynamic_cast<Pawn*>(p);
             if (pawn->enPassantCapturable) {
                 moves.emplace_back(r + dir, k + i);
@@ -212,7 +212,7 @@ std::vector<std::pair<int, int>> King::getAllowedMoves(int r, int k, Game &g) {
         auto replaced = g.getPiece(newR, newK);
         g.setPiece(newR, newK, this);
         g.setPiece(r, k, nullptr);
-        if (g.inCheck(getKleur())) {
+        if (g.inCheck(getColor())) {
             it = moves.erase(it);
         } else it++;
 
@@ -237,7 +237,7 @@ void Pawn::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
     if (newR != r) {
         for (int i = -1; i <= 1; i += 2) {
             ChessPiece* p = g.getPiece(r, k + i);
-            if (p != nullptr && p->getKleur() != getKleur() && p->piece().type() == Piece::Pawn) {
+            if (p != nullptr && p->getColor() != getColor() && p->piece().type() == Piece::Pawn) {
                 Pawn* pawn = dynamic_cast<Pawn*>(p);
                 if (pawn->enPassantCapturable) {
                     g.setPiece(r, k + i, nullptr);

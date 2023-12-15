@@ -15,6 +15,7 @@ SchaakGUI::SchaakGUI():ChessWindow(nullptr) {
 // Update de inhoud van de grafische weergave van het schaakbord (scene)
 // en maak het consistent met de game state in variabele g.
 void SchaakGUI::update() {
+    clearBoard();
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8 ; j++) {
             ChessPiece* piece = g.getPiece(i, j);
@@ -30,11 +31,25 @@ void SchaakGUI::update() {
 // geklikt wordt. x,y geeft de positie aan waar er geklikt
 // werd; r is de 0-based rij, k de 0-based kolom
 void SchaakGUI::clicked(int r, int k) {
+    removeAllMarking();
+    if (selected.has_value()) {
+        ChessPiece* selectedPiece = g.getPiece(selected->first, selected->second);
+        if (g.move(selectedPiece, r, k)) {
+            update();
+        }
+        selected = std::nullopt;
+        return;
+    };
+
     ChessPiece* piece = g.getPiece(r, k);
+    if (piece == nullptr) return;
+    setTileSelect(r, k,true);
     std::vector<std::pair<int, int>> moves = piece->getMoves(r, k, g);
     for (auto move : moves) {
-        setTileSelect(move.first, move.second, true);
+        setTileFocus(move.first, move.second, true);
     }
+
+    selected = std::make_pair(r, k);
 }
 
 void SchaakGUI::newGame()

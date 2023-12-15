@@ -44,6 +44,23 @@ void Game::clearBoard() {
  * Anders wordt de move uitgevoerd en wordt true teruggegeven
  */
 bool Game::move(ChessPiece* s, int r, int k) {
+    int currentR;
+    int currentK;
+    bool found = false;
+    for (int i = 0; i < 8 && !found; i++)
+        for (int j = 0; j < 8; j++){
+            if (board[i][j] == s) {
+                found = true;
+                currentR = i;
+                currentK = j;
+                break;
+            }
+        }
+
+    std::vector<std::pair<int, int>> moves = s->getMoves(currentR, currentK, *this);
+    if (std::find(moves.begin(), moves.end(), std::make_pair(r, k)) == moves.end()) return false;
+    board[currentR][currentK] = nullptr;
+    board[r][k] = s;
     return true;
 }
 

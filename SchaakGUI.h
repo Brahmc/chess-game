@@ -9,6 +9,7 @@
 #include "ChessPiece.h"
 #include <QMessageBox>
 #include <QAction>
+#include <optional>
 
 class SchaakGUI:public ChessWindow {
 public:
@@ -18,6 +19,7 @@ public:
 
 private:
     Game g;
+    std::optional<std::pair<int, int>> selected;
 
     void clicked(int x, int y) override;
     void newGame() override;

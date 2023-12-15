@@ -11,7 +11,7 @@ bool isInBounds(int r, int k) {
     return r >= 0 && r < 8 && k >= 0 && k < 8;
 }
 
-void addOrthogonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, const Game &g) {
+void addOrthogonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, const Game &g, bool captureOnly = false) {
     for (int n = 0; n < 4; n++ ) {
         int start = n < 2 ? r : k;
         int dir = n % 2 == 0 ? 1 : -1;
@@ -24,9 +24,9 @@ void addOrthogonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, 
 
             ChessPiece* piece = g.getPiece(newR, newK);
 
-            if (piece == nullptr) {
+            if (piece == nullptr && !captureOnly) {
                 moves.emplace_back(newR, newK);
-            } else {
+            } else if (piece != nullptr) {
                 if (piece->getKleur() != p->getKleur()) {
                     moves.emplace_back(newR, newK);
                 }
@@ -36,7 +36,7 @@ void addOrthogonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, 
     }
 }
 
-void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, const Game &g) {
+void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, const Game &g, bool captureOnly = false) {
     for (int n = 0; n < 4; n++ ) {
         int dirR = n < 2 ? 1 : -1;
         int dirK = n % 2 == 0 ? 1 : -1;
@@ -48,9 +48,9 @@ void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, in
             if (!isInBounds(newR, newK)) break;
 
             ChessPiece* piece = g.getPiece(newR, newK);
-            if (piece == nullptr) {
+            if (piece == nullptr && !captureOnly) {
                 moves.emplace_back(newR, newK);
-            } else {
+            } else if (piece != nullptr) {
                 if (piece->getKleur() != p->getKleur()) {
                     moves.emplace_back(newR, newK);
                 }
@@ -61,54 +61,52 @@ void addDiagonalMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, in
 }
 
 void removeDiscoveredCheckMoves(std::vector<std::pair<int, int>> &moves, ChessPiece* p, int r, int k, Game &g) {
-    static const std::unordered_set<Piece::Type> discoveredCheckPieces = {Piece::Queen, Piece::Rook, Piece::Bishop};
-
     auto kingPos = g.getPosition(Piece::King, p->getKleur());
 
     std::vector<std::pair<int, int>> discoveredCheckPieceOrth;
     std::vector<std::pair<int, int>> discoveredCheckPieceDia;
-    g.setPiece(r, k, nullptr);
-    addOrthogonalMoves(discoveredCheckPieceOrth, p, kingPos.first, kingPos.second, g);
-    addDiagonalMoves(discoveredCheckPieceDia, p, kingPos.first, kingPos.second, g);
 
-    // remove positions that don't have a discovered check piece
+    g.setPiece(r, k, nullptr);
+    addOrthogonalMoves(discoveredCheckPieceOrth, p, kingPos.first, kingPos.second, g, true);
+    addDiagonalMoves(discoveredCheckPieceDia, p, kingPos.first, kingPos.second, g, true);
+
     for (auto it = discoveredCheckPieceOrth.begin(); it != discoveredCheckPieceOrth.end();) {
-        ChessPiece* piece = g.getPiece(it->first, it->second);
-        if (piece == nullptr || piece->getKleur() == p->getKleur() || discoveredCheckPieces.find(piece->piece().type()) == discoveredCheckPieces.end()) {
+        auto pt = g.getPiece(it->first, it->second)->piece().type();
+        if (pt != Piece::Queen && pt != Piece::Rook) {
             it = discoveredCheckPieceOrth.erase(it);
         } else it++;
     }
-
     for (auto it = discoveredCheckPieceDia.begin(); it != discoveredCheckPieceDia.end();) {
-        ChessPiece* piece = g.getPiece(it->first, it->second);
-        if (piece == nullptr || piece->getKleur() == p->getKleur() || discoveredCheckPieces.find(piece->piece().type()) == discoveredCheckPieces.end()) {
+        auto piece = g.getPiece(it->first, it->second)->piece().type();
+        if (piece != Piece::Queen && piece != Piece::Bishop) {
             it = discoveredCheckPieceDia.erase(it);
         } else it++;
     }
     g.setPiece(r, k , p);
 
     size_t amount = discoveredCheckPieceOrth.size() + discoveredCheckPieceDia.size();
-    if (amount == 0) return;
     if (amount > 1) { // King is in check by 2 pieces
         moves.clear();
         return;
     }
 
     // Remove moves that don't block the discovered check piece
-    auto threatPos = discoveredCheckPieceOrth[0];
-    for (auto it = moves.begin(); it != moves.end();) {
-        if (threatPos.first - it->first != threatPos.second - it->second || // Move is not on the same diagonal
+    if (discoveredCheckPieceDia.size() == 1) {
+        auto threatPos = discoveredCheckPieceDia[0];
+        for (auto it = moves.begin(); it != moves.end();) {
+            if (threatPos.first - it->first != threatPos.second - it->second || // Move is not on the same diagonal
                 ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) ) ) { // Move is not in the same direction
-            it = moves.erase(it);
-        } else it++;
-    }
-
-    threatPos = discoveredCheckPieceDia[0];
-    for (auto it = moves.begin(); it != moves.end(); ) {
-        if ((threatPos.first == kingPos.first) != (it->first == kingPos.first) || (threatPos.second == kingPos.second) != (it->second == kingPos.second) // Move is not on the same orthogonal
-            || ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) )) {  // Move is not in the same direction
-            it = moves.erase(it);
-        } else it++;
+                it = moves.erase(it);
+            } else it++;
+        }
+    } else {
+        auto threatPos = discoveredCheckPieceOrth[0];
+        for (auto it = moves.begin(); it != moves.end(); ) {
+            if ((threatPos.first == kingPos.first) != (it->first == kingPos.first) || (threatPos.second == kingPos.second) != (it->second == kingPos.second) // Move is not on the same orthogonal
+                || ((threatPos.first < kingPos.first) != (it->first < kingPos.first) || (threatPos.second < kingPos.second) != (it->second < kingPos.second) )) {  // Move is not in the same direction
+                it = moves.erase(it);
+            } else it++;
+        }
     }
 }
 
@@ -207,13 +205,14 @@ std::vector<std::pair<int, int>> King::getAllowedMoves(int r, int k, Game &g) {
     while (it < moves.end()) {
         int newR = it->first;
         int newK = it->second;
+        auto replaced = g.getPiece(newR, newK);
         g.setPiece(newR, newK, this);
         g.setPiece(r, k, nullptr);
         if (g.inCheck(getKleur())) {
             it = moves.erase(it);
         } else it++;
 
-        g.setPiece(newR, newK, nullptr);
+        g.setPiece(newR, newK, replaced);
         g.setPiece(r, k, this);
     }
     return moves;

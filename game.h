@@ -32,6 +32,7 @@ private:
 
     void clearBoard();
 
+    bool noValidMoves(zw kleur);
 };
 
 #endif //SCHAKEN_GAME_H

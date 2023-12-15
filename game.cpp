@@ -67,7 +67,7 @@ bool Game::move(ChessPiece* s, int r, int k) {
 
 // Geeft true als kleur inCheck staat
 bool Game::inCheck(zw kleur) const {
-
+    // brute force can be optimized
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             ChessPiece* p = getPiece(i, j);
@@ -85,7 +85,7 @@ bool Game::inCheck(zw kleur) const {
 
 // geeft true als kleur checkMate staat
 bool Game::checkMate(zw kleur) {
-    return false;
+    return noValidMoves(kleur) && inCheck(kleur);
 }
 
 /* Geeft true als kleur pat staat
@@ -93,15 +93,18 @@ bool Game::checkMate(zw kleur) {
  * dit resulteert in een gelijkspel)
  */
 bool Game::staleMate(zw kleur) {
-    // for (int i = 0; i < 8; i++) {
-    //     for (int j = 0; j < 8; j++) {
-    //         if (board[i][j].getMoves().size() == 0) {
-    //             return false;
-    //         }
-    //     }
-    // }
-    // return true;
-    return false;
+    return noValidMoves(kleur) && !inCheck(kleur);
+}
+
+bool Game::noValidMoves(zw kleur) {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (board[i][j]->getAllowedMoves(i, j, *this).empty()) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 /* Geeft een pointer naar het schaakstuk dat op rij r, kolom k staat

@@ -200,7 +200,6 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
 std::vector<std::pair<int, int>> King::getAllowedMoves(int r, int k, Game &g) {
     std::vector<std::pair<int, int>> moves = getMoves(r, k, g);
 
-    // could be optimized
     auto it = moves.begin();
     while (it < moves.end()) {
         int newR = it->first;

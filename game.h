@@ -17,22 +17,22 @@ public:
 
     bool move(ChessPiece* s, int r, int k); // Verplaats stuk s naar rij r en kolom k
 
-    bool inCheck(zw kleur) const;
-    bool checkMate(zw kleur);
-    bool staleMate(zw kleur);
+    bool inCheck(bw kleur) const;
+    bool checkMate(bw kleur);
+    bool staleMate(bw kleur);
     void setStartBord();
 
     [[nodiscard]] ChessPiece* getPiece(int r, int k) const;
     void setPiece(int r, int k, ChessPiece* s);
 
-    std::pair<int, int> getPosition(Piece::Type type, zw kleur) const;
+    std::pair<int, int> getPosition(Piece::Type type, bw kleur) const;
 
 private:
     ChessPiece* board[8][8];
 
     void clearBoard();
 
-    bool noValidMoves(zw kleur);
+    bool noValidMoves(bw kleur);
 };
 
 #endif //SCHAKEN_GAME_H

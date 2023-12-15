@@ -14,7 +14,7 @@ void Game::setStartBord() {
     clearBoard();
 
     for (int i = 0; i < 8; i+= 7) {
-        zw color = i == 0 ? black : white;
+        bw color = i == 0 ? black : white;
         board[i][0] = new Rook(color);
         board[i][1] = new Knight(color);
         board[i][2] = new Bishop(color);
@@ -67,7 +67,7 @@ bool Game::move(ChessPiece* s, int r, int k) {
 }
 
 // Geeft true als kleur inCheck staat
-bool Game::inCheck(zw kleur) const {
+bool Game::inCheck(bw kleur) const {
     // brute force can be optimized
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -86,7 +86,7 @@ bool Game::inCheck(zw kleur) const {
 }
 
 // geeft true als kleur checkMate staat
-bool Game::checkMate(zw kleur) {
+bool Game::checkMate(bw kleur) {
     return noValidMoves(kleur) && inCheck(kleur);
 }
 
@@ -94,11 +94,11 @@ bool Game::checkMate(zw kleur) {
  *  (staleMate = geen geldige zet mogelijk, maar kleur staat niet inCheck;
  * dit resulteert in een gelijkspel)
  */
-bool Game::staleMate(zw kleur) {
+bool Game::staleMate(bw kleur) {
     return noValidMoves(kleur) && !inCheck(kleur);
 }
 
-bool Game::noValidMoves(zw kleur) {
+bool Game::noValidMoves(bw kleur) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             if (board[i][j]->getAllowedMoves(i, j, *this).empty()) {
@@ -126,7 +126,7 @@ void Game::setPiece(int r, int k, ChessPiece* s)
     board[r][k] = s;
 }
 
-std::pair<int, int> Game::getPosition(Piece::Type type, zw kleur) const {
+std::pair<int, int> Game::getPosition(Piece::Type type, bw kleur) const {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++){
             ChessPiece* p = board[i][j];

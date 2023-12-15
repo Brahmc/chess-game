@@ -67,7 +67,19 @@ std::vector<std::pair<int, int>> Rook::getMoves(int r, int k, Game &g) {
 }
 
 std::vector<std::pair<int, int>> Knight::getMoves(int r, int k, Game &g) {
+    std::vector<std::pair<int, int>> moves;
+    for (int n = 0; n < 8; n++) {
+        int newR = r + (n % 4 < 2 ? 1 : -1) * (n < 4 ? 2 : 1);
+        int newK = k + (n % 2 == 0 ? 1 : -1) * (n < 4 ? 1 : 2);
 
+        if (isInBounds(newR, newK)) {
+            ChessPiece* piece = g.getPiece(newR, newK);
+            if (piece == nullptr || piece->getKleur() != getKleur()) {
+                moves.emplace_back(newR, newK);
+            }
+        }
+    }
+    return moves;
 }
 
 std::vector<std::pair<int, int>> Bishop::getMoves(int r, int k, Game &g) {

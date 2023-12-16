@@ -175,6 +175,9 @@ bool Game::promotePawn(ChessPiece* piece) {
 
     delete getPiece(waitingForPromotion->first, waitingForPromotion->second);
     setPiece(waitingForPromotion->first, waitingForPromotion->second, piece);
+    for (const auto &item: promotionPieces) {
+        if (item != piece) delete item;
+    }
     waitingForPromotion = std::nullopt;
 
     return true;
@@ -201,4 +204,12 @@ std::vector<std::pair<int, int>> Game::getPositionsUnderThreat(bw color) const {
 
 bw Game::getTurn() const {
     return turn;
+}
+
+Pawn *Game::getEnPassantPawn() const {
+    return enPassantPawn;
+}
+
+void Game::setEnPassantPawn(Pawn *enPassantPawn) {
+    Game::enPassantPawn = enPassantPawn;
 }

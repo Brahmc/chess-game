@@ -138,8 +138,8 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
     }
 
     for (int i = -1; i <= 1; i += 2) {
-        Pawn* pawn = dynamic_cast<Pawn*>(g.getPiece(r, k + i));
-        if (pawn != nullptr && pawn->getColor() != getColor() && pawn->enPassantCapturable) {
+        ChessPiece* p = g.getPiece(r, k + i);
+        if (p != nullptr && p->getColor() != getColor() && p == g.getEnPassantPawn()) {
             moves.emplace_back(r + dir, k + i);
         }
     }
@@ -192,29 +192,33 @@ std::vector<std::pair<int, int>> ChessPiece::getAllowedMoves(int r, int k, Game 
     return moves;
 }
 
-void ChessPiece::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {}
+void ChessPiece::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
+    g.setEnPassantPawn(nullptr);
+}
 
 void Pawn::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
-    enPassantCapturable = std::abs(r - newR) == 2;
+    if (newR != r) { // capture
+        ChessPiece* p = g.getPiece(r, newK);
+        if (p != nullptr && p->getColor() != getColor() && p == g.getEnPassantPawn()) {
+            g.setPiece(r, newK, nullptr);
+        }
+    }
+
+    ChessPiece::triggerMoveEvent(r, k , newR, newK, g);
+    if (std::abs(r - newR) == 2) g.setEnPassantPawn(this);
 
     if (newR == 0 || newR == 7) {
         g.setWaitingForPromotion(std::optional<std::pair<int, int>>(std::make_pair(newR, newK)));
-    };
-
-    if (newR == r) return;
-    for (int i = -1; i <= 1; i += 2) {
-        Pawn* pawn = dynamic_cast<Pawn*>(g.getPiece(r, k + i));
-        if (pawn != nullptr && pawn->getColor() != getColor() && pawn->enPassantCapturable) {
-            g.setPiece(r, k + i, nullptr);
-        }
     }
 }
 
 void Rook::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
+    ChessPiece::triggerMoveEvent(r, k, newR, newK, g);
     moved = true;
 }
 
 void King::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
+    ChessPiece::triggerMoveEvent(r, k, newR, newK, g);
     hasMoved = true;
 
     if (std::abs(newK - k) == 2) { // castle

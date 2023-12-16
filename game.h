@@ -40,6 +40,10 @@ public:
     bw getTurn() const;
 
     [[nodiscard]] std::vector<std::pair<int, int>> getPositionsUnderThreat(bw color) const;
+
+    [[nodiscard]] Pawn *getEnPassantPawn() const;
+
+    void setEnPassantPawn(Pawn *enPassantPawn);
 private:
     ChessPiece* board[8][8];
 

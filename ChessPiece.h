@@ -36,8 +36,6 @@ public:
 
     void triggerMoveEvent(int r, int k, int newR, int newK, Game &g) override;
 
-private:
-    bool enPassantCapturable = false;
 };
 
 class Rook: public ChessPiece {

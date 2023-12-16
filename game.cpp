@@ -175,6 +175,8 @@ bool Game::promotePawn(ChessPiece* piece) {
     delete getPiece(waitingForPromotion->first, waitingForPromotion->second);
     setPiece(waitingForPromotion->first, waitingForPromotion->second, piece);
     waitingForPromotion = std::nullopt;
+
+    return true;
 }
 
 bw Game::getTurn() const {

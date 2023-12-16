@@ -32,16 +32,10 @@ void SchaakGUI::update() {
 // werd; r is de 0-based rij, k de 0-based kolom
 void SchaakGUI::clicked(int r, int k) {
     if (g.isWaitingForPromotion()) {
-        std::pair<int,int> promotionPos = g.getWaitingForPromotion().value();
-        int dir = promotionPos.first == 0 ? 1 : -1;
-
-        auto promotionPieces = g.getPromotionPieces();
-        if (r > (promotionPos.first + (int)promotionPieces.size() * dir - 1) || k != promotionPos.second) return;
-        ChessPiece* piece = promotionPieces[promotionPos.first + r * dir];
-        g.promotePawn(piece);
-
-        removeAllMarking();
-        update();
+        bool success = handlePromotionSelected(r, k);
+        if (success && g.inCheck(g.getTurn())) {
+            message("Check!");
+        }
         return;
     }
     removeAllMarking();
@@ -52,6 +46,10 @@ void SchaakGUI::clicked(int r, int k) {
             update();
             if (g.isWaitingForPromotion()) {
                 drawPromotionSelection();
+            } else {
+                if (g.inCheck(g.getTurn())) {
+                    message("Check!");
+                }
             }
         }
         selected = std::nullopt;
@@ -77,6 +75,20 @@ void SchaakGUI::drawPromotionSelection() {
         setItem(promotionPos.first + i * (dir), promotionPos.second, promotionPieces[i]);
         setTileFocus(promotionPos.first + i * (dir), promotionPos.second, true);
     }
+}
+
+bool SchaakGUI::handlePromotionSelected(int r, int k) {
+    std::pair<int,int> promotionPos = g.getWaitingForPromotion().value();
+    int dir = promotionPos.first == 0 ? 1 : -1;
+
+    auto promotionPieces = g.getPromotionPieces();
+    if (r > (promotionPos.first + (int)promotionPieces.size() * dir - 1) || k != promotionPos.second) return false;
+    ChessPiece* piece = promotionPieces[promotionPos.first + r * dir];
+    g.promotePawn(piece);
+
+    removeAllMarking();
+    update();
+    return true;
 }
 
 void SchaakGUI::newGame()

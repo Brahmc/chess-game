@@ -2,18 +2,18 @@
 // Created by toonc on 12/17/2021.
 //
 
-#include "SchaakGUI.h"
+#include "ChessGUI.h"
 #include "guicode/message.h"
 #include "guicode/fileIO.h"
 
 // Constructor
-SchaakGUI::SchaakGUI():ChessWindow(nullptr) {
-    newGame();
+ChessGUI::ChessGUI(): ChessWindow(nullptr) {
+    ChessGUI::newGame();
 }
 
 // Update de inhoud van de grafische weergave van het schaakbord (scene)
 // en maak het consistent met de game state in variabele g.
-void SchaakGUI::update() {
+void ChessGUI::update() {
     clearBoard();
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8 ; j++) {
@@ -29,7 +29,7 @@ void SchaakGUI::update() {
 // Deze functie wordt opgeroepen telkens er op het schaakbord
 // geklikt wordt. x,y geeft de positie aan waar er geklikt
 // werd; r is de 0-based rij, k de 0-based kolom
-void SchaakGUI::clicked(int r, int k) {
+void ChessGUI::clicked(int r, int k) {
     if (g.isWaitingForPromotion()) {
         bool success = handlePromotionSelected(r, k);
         if (success) {
@@ -68,7 +68,7 @@ void SchaakGUI::clicked(int r, int k) {
 
 }
 
-void SchaakGUI::displayStatusMessage() {
+void ChessGUI::displayStatusMessage() {
     if (g.inCheck(g.getTurn())) {
         if (g.checkMate(g.getTurn())) {
             message("Checkmate! " + QString((g.getTurn() == white ? "Black" : "White")) + " wins!");
@@ -80,7 +80,7 @@ void SchaakGUI::displayStatusMessage() {
     }
 }
 
-void SchaakGUI::drawPromotionSelection() {
+void ChessGUI::drawPromotionSelection() {
     std::pair<int,int> promotionPos = g.getPawnWaitingForPromotion().value();
     auto promotionPieces = g.getPromotionPieces();
     int dir = promotionPos.first == 0 ? 1 : -1;
@@ -90,7 +90,7 @@ void SchaakGUI::drawPromotionSelection() {
     }
 }
 
-bool SchaakGUI::handlePromotionSelected(int r, int k) {
+bool ChessGUI::handlePromotionSelected(int r, int k) {
     std::pair<int,int> promotionPos = g.getPawnWaitingForPromotion().value();
     int dir = promotionPos.first == 0 ? 1 : -1;
 
@@ -104,7 +104,7 @@ bool SchaakGUI::handlePromotionSelected(int r, int k) {
     return true;
 }
 
-void SchaakGUI::updateThreads() {
+void ChessGUI::updateThreads() {
     removeAllPieceThreats();
     std::vector<std::pair<int, int>> positions;
 
@@ -123,7 +123,7 @@ void SchaakGUI::updateThreads() {
     }
 }
 
-void SchaakGUI::newGame()
+void ChessGUI::newGame()
 {
     g = Game();
     g.setStartBord();
@@ -133,7 +133,7 @@ void SchaakGUI::newGame()
 
 
 // TODO: save state of En passant pawn, castling
-void SchaakGUI::save() {
+void ChessGUI::save() {
     QFile file;
     if (!openFileToWrite(file)) return;
 
@@ -147,7 +147,7 @@ void SchaakGUI::save() {
     out << QString(g.getTurn() == white ? "w" : "b");
 }
 
-QString SchaakGUI::pieceToString(ChessPiece* piece) {
+QString ChessGUI::pieceToString(ChessPiece* piece) {
     if (piece == nullptr) return ".";
     QString pieceString = "";
     switch (piece->piece().type()) {
@@ -169,6 +169,8 @@ QString SchaakGUI::pieceToString(ChessPiece* piece) {
         case Piece::King:
             pieceString += "K";
             break;
+        case Piece::None:
+            return ".";
     }
     return pieceString + QString(piece->getColor() == white ? "w" : "b");
 }
@@ -194,7 +196,7 @@ ChessPiece* stringToPiece(QString pieceString) {
     }
 }
 
-void SchaakGUI::open() {
+void ChessGUI::open() {
     QFile file;
     Game newGame = Game();
     if (!openFileToRead(file)) return;
@@ -226,16 +228,16 @@ void SchaakGUI::open() {
 }
 
 
-void SchaakGUI::undo() {
+void ChessGUI::undo() {
     message("UNDO");
 }
 
-void SchaakGUI::redo() {
+void ChessGUI::redo() {
     message("REDO");
 }
 
 
-void SchaakGUI::visualizationChange() {
+void ChessGUI::visualizationChange() {
     QString visstring = QString(displayMoves()?"T":"F")+(displayKills()?"T":"F")+(displayThreats()?"T":"F");
     updateThreads();
     message(QString("Nieuwe settings : ")+visstring);

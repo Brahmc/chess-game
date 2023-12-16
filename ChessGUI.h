@@ -2,8 +2,8 @@
 // Created by toonc on 12/17/2021.
 //
 
-#ifndef SCHAKEN_SCHAAK_GUI_H
-#define SCHAKEN_SCHAAK_GUI_H
+#ifndef CHESS_CHESS_GUI_H
+#define CHESS_CHESS_GUI_H
 
 #include "guicode/ChessWindow.h"
 #include "ChessPiece.h"
@@ -11,11 +11,11 @@
 #include <QAction>
 #include <optional>
 
-class SchaakGUI:public ChessWindow {
+class ChessGUI: public ChessWindow {
 public:
-    SchaakGUI();
+    ChessGUI();
 
-    void update();
+    void update() override;
 
 private:
     Game g;
@@ -55,6 +55,6 @@ private:
     void displayStatusMessage();
 };
 
-#endif //SCHAKEN_SCHAAKGUI_H
+#endif //CHESS_CHESS_GUI_H
 
 

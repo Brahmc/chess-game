@@ -3,8 +3,8 @@
 //  Opmerkingen: (bvb aanpassingen van de opgave)
 //
 
-#ifndef SCHAAK_GAME_H
-#define SCHAAK_GAME_H
+#ifndef CHESS_GAME_H
+#define CHESS_GAME_H
 
 #include "ChessPiece.h"
 
@@ -17,9 +17,9 @@ public:
 
     bool move(ChessPiece* s, int r, int k); // Verplaats stuk s naar rij r en kolom k
 
-    bool inCheck(bw kleur) const;
-    bool checkMate(bw kleur);
-    bool staleMate(bw kleur);
+    [[nodiscard]] bool inCheck(bw color) const;
+    bool checkMate(bw color);
+    bool staleMate(bw color);
     void setStartBord();
 
     [[nodiscard]] ChessPiece* getPiece(int r, int k) const;
@@ -39,7 +39,7 @@ public:
 
     bool promotePawn(ChessPiece *piece);
 
-    bw getTurn() const;
+    [[nodiscard]] bw getTurn() const;
 
     void setTurn(bw turn);
 
@@ -59,13 +59,13 @@ private:
 
     void clearBoard();
 
-    bool noValidMoves(bw kleur);
+    bool noValidMoves(bw color);
 
     bw turn = white;
 
-    [[nodiscard]] std::pair<int, int> getPosition(Piece::Type type, bw kleur) const;
+    [[nodiscard]] std::pair<int, int> getPosition(Piece::Type type, bw color) const;
 };
 
-#endif //SCHAKEN_GAME_H
+#endif //CHESS_GAME_H
 
 

@@ -3,8 +3,8 @@
 //  Opmerkingen: (bvb aanpassingen van de opgave)
 //
 
-#ifndef SCHAKEN_SCHAAKSTUK_H
-#define SCHAKEN_SCHAAKSTUK_H
+#ifndef CHESS_CHESSPIECE_H
+#define CHESS_CHESSPIECE_H
 #include <guicode/chessboard.h>
 
 class Game;
@@ -13,9 +13,9 @@ enum bw{black,white};
 
 class ChessPiece {
 public:
-    ChessPiece(bw color): color(color) {}
+    explicit ChessPiece(bw color): color(color) {}
 
-    virtual Piece piece() const=0;
+    [[nodiscard]] virtual Piece piece() const=0;
     virtual std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) = 0;
     virtual std::vector<std::pair<int, int>> getAllowedMoves(int r, int k, Game &g);
     virtual ChessPiece * move(int r, int k, int newR, int newK, Game &g);
@@ -28,9 +28,9 @@ private:
 
 class Pawn: public ChessPiece {
 public:
-    Pawn(bw color): ChessPiece(color) {}
-    virtual Piece piece() const override {
-        return Piece(Piece::Pawn, getColor() == white ? Piece::White : Piece::Black);
+    explicit Pawn(bw color): ChessPiece(color) {}
+    [[nodiscard]] Piece piece() const override {
+        return {Piece::Pawn, getColor() == white ? Piece::White : Piece::Black};
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 
@@ -40,10 +40,10 @@ public:
 
 class Rook: public ChessPiece {
 public:
-    Rook(bw color): ChessPiece(color) {}
+    explicit Rook(bw color): ChessPiece(color) {}
 
-    Piece piece() const override {
-        return Piece(Piece::Rook, getColor() == white ? Piece::White : Piece::Black);
+    [[nodiscard]] Piece piece() const override {
+        return {Piece::Rook, getColor() == white ? Piece::White : Piece::Black};
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 
@@ -57,30 +57,30 @@ private:
 
 class Knight: public ChessPiece {
 public:
-    Knight(bw color): ChessPiece(color) {}
+    explicit Knight(bw color): ChessPiece(color) {}
 
-    Piece piece() const override {
-        return Piece(Piece::Knight, getColor() == white ? Piece::White : Piece::Black);
+    [[nodiscard]] Piece piece() const override {
+        return {Piece::Knight, getColor() == white ? Piece::White : Piece::Black};
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
 class Bishop: public ChessPiece {
 public:
-    Bishop(bw color): ChessPiece(color) {}
+    explicit Bishop(bw color): ChessPiece(color) {}
 
-    Piece piece() const override {
-        return Piece(Piece::Bishop, getColor() == white ? Piece::White : Piece::Black);
+    [[nodiscard]] Piece piece() const override {
+        return {Piece::Bishop, getColor() == white ? Piece::White : Piece::Black};
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
 class King: public ChessPiece {
 public:
-    King(bw color): ChessPiece(color) {}
+    explicit King(bw color): ChessPiece(color) {}
 
-    Piece piece() const override {
-        return Piece(Piece::King, getColor() == white ? Piece::White : Piece::Black);
+    [[nodiscard]] Piece piece() const override {
+        return {Piece::King, getColor() == white ? Piece::White : Piece::Black};
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 
@@ -94,12 +94,12 @@ private:
 
 class Queen: public ChessPiece {
 public:
-    Queen(bw color): ChessPiece(color) {}
+    explicit Queen(bw color): ChessPiece(color) {}
 
-    Piece piece() const override {
-        return Piece(Piece::Queen, getColor() == white ? Piece::White : Piece::Black);
+    [[nodiscard]] Piece piece() const override {
+        return {Piece::Queen, getColor() == white ? Piece::White : Piece::Black};
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 };
 
-#endif //SCHAKEN_SCHAAKSTUK_H
+#endif //CHESS_CHESSPIECE_H

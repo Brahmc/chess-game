@@ -97,6 +97,12 @@ void ChessWindow::removeAllMarking() {
     scene->removeAllMarking();  // Alle markeringen weg
 }
 
+void ChessWindow::removeAllTileFocus() {
+    scene->removeAllTileFocus();
+    scene->removeAllTileSelection();
+}
+
+
 void ChessWindow::clearBoard() {
     scene->clearBoard();
 }

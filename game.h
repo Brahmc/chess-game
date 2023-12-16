@@ -38,6 +38,8 @@ public:
     bool promotePawn(ChessPiece *piece);
 
     bw getTurn() const;
+
+    [[nodiscard]] std::vector<std::pair<int, int>> getPositionsUnderThreat(bw color) const;
 private:
     ChessPiece* board[8][8];
 
@@ -47,14 +49,11 @@ private:
 
     std::vector<ChessPiece*> promotionPieces;
 
-    bw turn = white;
-
-private:
-
     void clearBoard();
 
     bool noValidMoves(bw kleur);
 
+    bw turn = white;
 };
 
 #endif //SCHAKEN_GAME_H

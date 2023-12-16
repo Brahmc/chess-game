@@ -3,6 +3,7 @@
 //  Opmerkingen: (bvb aanpassingen van de opgave)
 //
 
+#include <unordered_set>
 #include "game.h"
 
 Game::Game() {}
@@ -177,6 +178,25 @@ bool Game::promotePawn(ChessPiece* piece) {
     waitingForPromotion = std::nullopt;
 
     return true;
+}
+
+std::vector<std::pair<int, int>> Game::getPositionsUnderThreat(bw color) const {
+    std::unordered_map<ChessPiece*, std::pair<int, int>> positionsUnderThreat;
+    for (int r = 0; r < 8; r++) {
+        for (int k = 0; k < 8; k++) {
+            ChessPiece* p = getPiece(r, k);
+            if (p == nullptr || p->getColor() == color) continue;
+            for (const auto &move: p->getMoves(r, k, *this)) {
+                ChessPiece* underThread = getPiece(move.first, move.second);
+                if (underThread != nullptr)
+                    positionsUnderThreat[underThread] = std::make_pair(move.first, move.second);
+            }
+        }
+    }
+    std::vector<std::pair<int, int>> positions;
+    for (const auto &p : positionsUnderThreat)
+        positions.push_back(p.second);
+    return positions;
 }
 
 bw Game::getTurn() const {

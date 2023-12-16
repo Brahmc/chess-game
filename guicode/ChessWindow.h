@@ -27,6 +27,7 @@ protected:
     virtual void visualizationChange()=0;
 
     void removeAllMarking();
+    void removeAllTileFocus();
     void clearBoard();
     void setItem(int i, int j, ChessPiece* p);
     void setPieceThreat(int i,int j,bool b);

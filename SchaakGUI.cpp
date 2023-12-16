@@ -38,7 +38,8 @@ void SchaakGUI::clicked(int r, int k) {
         }
         return;
     }
-    removeAllMarking();
+    removeAllTileFocus();
+
 
     if (selected.has_value()) {
         ChessPiece* selectedPiece = g.getPiece(selected->first, selected->second);
@@ -47,6 +48,7 @@ void SchaakGUI::clicked(int r, int k) {
             if (g.isWaitingForPromotion()) {
                 drawPromotionSelection();
             } else {
+                updateThreads();
                 if (g.inCheck(g.getTurn())) {
                     message("Check!");
                 }
@@ -89,6 +91,25 @@ bool SchaakGUI::handlePromotionSelected(int r, int k) {
     removeAllMarking();
     update();
     return true;
+}
+
+void SchaakGUI::updateThreads() {
+    removeAllMarking();
+    std::vector<std::pair<int, int>> positions;
+
+    if (displayThreats()) {
+        auto threads = g.getPositionsUnderThreat(g.getTurn());
+        positions.insert(positions.end(), threads.begin(), threads.end());
+    }
+
+    if (displayKills()) {
+        auto kills = g.getPositionsUnderThreat(g.getTurn() == white ? black : white);
+        positions.insert(positions.end(), kills.begin(), kills.end());
+    }
+
+    for (const auto &pos : positions) {
+        setPieceThreat(pos.first, pos.second, true);
+    }
 }
 
 void SchaakGUI::newGame()
@@ -155,6 +176,7 @@ void SchaakGUI::redo() {
 
 void SchaakGUI::visualizationChange() {
     QString visstring = QString(displayMoves()?"T":"F")+(displayKills()?"T":"F")+(displayThreats()?"T":"F");
+    updateThreads();
     message(QString("Nieuwe settings : ")+visstring);
 }
 

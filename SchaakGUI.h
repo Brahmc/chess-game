@@ -47,6 +47,8 @@ private:
     void drawPromotionSelection();
 
     bool handlePromotionSelected(int r, int k);
+
+    void updateThreads();
 };
 
 #endif //SCHAKEN_SCHAAKGUI_H

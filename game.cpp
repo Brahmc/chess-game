@@ -139,3 +139,38 @@ std::pair<int, int> Game::getPosition(Piece::Type type, bw kleur) const {
     }
     return std::make_pair(-1, -1);
 }
+
+const std::optional<std::pair<int, int>> &Game::getWaitingForPromotion() const {
+    return waitingForPromotion;
+}
+
+void Game::setWaitingForPromotion(const std::optional<std::pair<int, int>> &waitingForPromotion) {
+    Game::waitingForPromotion = waitingForPromotion;
+}
+
+bool Game::isWaitingForPromotion() {
+    return waitingForPromotion.has_value();
+}
+
+std::vector<ChessPiece*> Game::getPromotionPieces() {
+    std::vector<ChessPiece*> pieces;
+    ChessPiece* promotionPiece = board[waitingForPromotion->first][waitingForPromotion->second];
+    if (promotionPiece == nullptr) return pieces;
+    bw color = promotionPiece->getColor();
+    pieces.push_back(new Queen(color));
+    pieces.push_back(new Knight(color));
+    pieces.push_back(new Rook(color));
+    pieces.push_back(new Bishop(color));
+
+    promotionPieces = pieces;
+    return pieces;
+}
+
+bool Game::promotePawn(ChessPiece* piece) {
+    if (!isWaitingForPromotion()) return false;
+    if (std::find(promotionPieces.begin(), promotionPieces.end(), piece) == promotionPieces.end()) return false;
+
+    delete getPiece(waitingForPromotion->first, waitingForPromotion->second);
+    setPiece(waitingForPromotion->first, waitingForPromotion->second, piece);
+    waitingForPromotion = std::nullopt;
+}

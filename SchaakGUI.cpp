@@ -65,13 +65,16 @@ void SchaakGUI::clicked(int r, int k) {
     }
 
     if (clickedPiece == nullptr || clickedPiece->getColor() != g.getTurn()) return;
+    selected = std::make_pair(r, k);
+
     setTileSelect(r, k,true);
+    if (!displayMoves()) return;
+
     std::vector<std::pair<int, int>> moves = clickedPiece->getAllowedMoves(r, k, g);
     for (auto move : moves) {
         setTileFocus(move.first, move.second, true);
     }
 
-    selected = std::make_pair(r, k);
 }
 
 void SchaakGUI::drawPromotionSelection() {
@@ -99,7 +102,7 @@ bool SchaakGUI::handlePromotionSelected(int r, int k) {
 }
 
 void SchaakGUI::updateThreads() {
-    removeAllMarking();
+    removeAllPieceThreats();
     std::vector<std::pair<int, int>> positions;
 
     if (displayThreats()) {

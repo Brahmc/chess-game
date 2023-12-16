@@ -162,12 +162,15 @@ std::vector<std::pair<int, int>> King::getMoves(int r, int k, const Game &g) {
 std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
     std::vector<std::pair<int, int>> moves;
     int dir = getColor() == white ? -1 : 1;
-    int newR = r + dir;
-    if (!isInBounds(newR, k)) return moves;
+    if (!isInBounds(r + dir, k)) return moves;
 
-    {
-        ChessPiece* p = g.getPiece(newR, k);
-        if (p == nullptr) moves.emplace_back(newR, k);
+    if (g.getPiece(r + dir, k) == nullptr) {
+        moves.emplace_back(r + dir, k);
+
+        if ((r == 6 || r == 1) && isInBounds(r + 2 * dir, k)) {
+            ChessPiece *p2 = g.getPiece(r + 2 * dir, k);
+            if (p2 == nullptr) moves.emplace_back(r + 2 * dir, k);
+        }
     }
 
     if (k < 7) {
@@ -177,7 +180,7 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
         }
     }
 
-    if (k > 1) {
+    if (k > 0) {
         ChessPiece* p = g.getPiece(r+ dir, k - 1);
         if (p != nullptr && p->getColor() != getColor()) {
             moves.emplace_back(r + dir, k - 1);
@@ -191,12 +194,6 @@ std::vector<std::pair<int, int>> Pawn::getMoves(int r, int k, const Game &g) {
         }
     }
 
-    if (r != 6 && r != 1) return moves;
-    newR += dir;
-    if (isInBounds(newR, k)) {
-        ChessPiece* p = g.getPiece(newR, k);
-        if (p == nullptr) moves.emplace_back(newR, k);
-    }
     return moves;
 }
 

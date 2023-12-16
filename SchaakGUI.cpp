@@ -129,6 +129,7 @@ void SchaakGUI::newGame()
 }
 
 
+// TODO: save state of En passant pawn, castling
 void SchaakGUI::save() {
     QFile file;
     if (openFileToWrite(file)) {

@@ -27,12 +27,25 @@ public:
 
     std::pair<int, int> getPosition(Piece::Type type, bw kleur) const;
 
+    const std::optional<std::pair<int, int>> &getWaitingForPromotion() const;
+
+    void setWaitingForPromotion(const std::optional<std::pair<int, int>> &waitingForPromotion);
+
+    bool isWaitingForPromotion();
+
+    std::vector<ChessPiece *> getPromotionPieces();
+
+    bool promotePawn(ChessPiece *piece);
 private:
     ChessPiece* board[8][8];
+    Pawn* enPassantPawn = nullptr;
+    std::optional<std::pair<int, int>> waitingForPromotion;
+    std::vector<ChessPiece*> promotionPieces;
 
     void clearBoard();
 
     bool noValidMoves(bw kleur);
+
 };
 
 #endif //SCHAKEN_GAME_H

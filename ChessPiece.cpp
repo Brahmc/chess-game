@@ -249,6 +249,10 @@ void ChessPiece::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {}
 void Pawn::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
     enPassantCapturable = std::abs(r - newR) == 2;
 
+    if (newR == 0 || newR == 7) {
+        g.setWaitingForPromotion(std::optional<std::pair<int, int>>(std::make_pair(newR, newK)));
+    };
+
     if (newR == r) return;
     for (int i = -1; i <= 1; i += 2) {
         Pawn* pawn = dynamic_cast<Pawn*>(g.getPiece(r, k + i));

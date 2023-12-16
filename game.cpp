@@ -44,6 +44,8 @@ void Game::clearBoard() {
  * Anders wordt de move uitgevoerd en wordt true teruggegeven
  */
 bool Game::move(ChessPiece* s, int r, int k) {
+    if (isWaitingForPromotion()) return false;
+
     int currentR;
     int currentK;
     bool found = false;

@@ -44,6 +44,7 @@ private:
     bool displayMoves();
     bool displayThreats();
 */
+    void drawPromotionSelection();
 };
 
 #endif //SCHAKEN_SCHAAKGUI_H

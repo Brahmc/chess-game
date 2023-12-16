@@ -40,7 +40,8 @@ void SchaakGUI::clicked(int r, int k) {
     removeAllTileFocus();
 
 
-    if (selected.has_value()) {
+    ChessPiece* clickedPiece = g.getPiece(r, k);
+    if (selected.has_value() && (clickedPiece == nullptr || clickedPiece->getColor() != g.getTurn())) {
         ChessPiece* selectedPiece = g.getPiece(selected->first, selected->second);
         if (g.move(selectedPiece, r, k)) {
             update();
@@ -61,12 +62,11 @@ void SchaakGUI::clicked(int r, int k) {
         }
         selected = std::nullopt;
         return;
-    };
+    }
 
-    ChessPiece* piece = g.getPiece(r, k);
-    if (piece == nullptr || piece->getColor() != g.getTurn()) return;
+    if (clickedPiece == nullptr || clickedPiece->getColor() != g.getTurn()) return;
     setTileSelect(r, k,true);
-    std::vector<std::pair<int, int>> moves = piece->getAllowedMoves(r, k, g);
+    std::vector<std::pair<int, int>> moves = clickedPiece->getAllowedMoves(r, k, g);
     for (auto move : moves) {
         setTileFocus(move.first, move.second, true);
     }

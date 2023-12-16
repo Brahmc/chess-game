@@ -53,7 +53,16 @@ bool Game::move(ChessPiece* s, int r, int k) {
     if (std::find(moves.begin(), moves.end(), std::make_pair(r, k)) == moves.end()) return false;
 
     ChessPiece* captured = s->move(pos.first, pos.second, r, k, *this);
-    delete captured;
+
+    if (history.size() != historyIndex + 1) {
+        for (size_t i = history.size() - 1; i > historyIndex; i--) {
+            delete history[i];
+            history.pop_back();
+        }
+    }
+    history.emplace_back(new Move{pos, std::make_pair(r,k), captured});
+    historyIndex++;
+
 
     turn = turn == white ? black : white;
     return true;
@@ -199,6 +208,26 @@ std::vector<std::pair<int, int>> Game::getPositionsUnderThreat(bw color) {
     for (const auto &p : positionsUnderThreat)
         positions.push_back(p.second);
     return positions;
+}
+
+void Game::undo() {
+    if (historyIndex < 0) return;
+    Move* m = history[historyIndex--];
+
+    ChessPiece* moved = getPiece(m->to.first, m->to.second);
+    setPiece(m->from.first, m->from.second, moved);
+    setPiece(m->to.first, m->to.second, m->captured);
+    turn = turn == white ? black : white;
+}
+
+void Game::redo() {
+    if (historyIndex >= (int)history.size() - 1) return;
+    Move* m = history[++historyIndex];
+
+    ChessPiece* moved = getPiece(m->from.first, m->from.second);
+    setPiece(m->to.first, m->to.second, moved);
+    setPiece(m->from.first, m->from.second, nullptr);
+    turn = turn == white ? black : white;
 }
 
 bw Game::getTurn() const {

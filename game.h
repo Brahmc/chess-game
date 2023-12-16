@@ -8,6 +8,13 @@
 
 #include "ChessPiece.h"
 
+struct Move {
+    std::pair<int, int> from;
+    std::pair<int, int> to;
+
+    ChessPiece* captured;
+};
+
 class Game {
 // variabelen om de status van het spel/bord te bewaren
 
@@ -48,10 +55,17 @@ public:
     [[nodiscard]] Pawn *getEnPassantPawn() const;
 
     void setEnPassantPawn(Pawn *enPassantPawn);
+
+    void undo();
+
+    void redo();
 private:
     ChessPiece* board[8][8];
 
     Pawn* enPassantPawn = nullptr;
+
+    std::vector<Move*> history;
+    int historyIndex = -1;
 
     std::optional<std::pair<int, int>> pawnWaitingForPromotion;
 

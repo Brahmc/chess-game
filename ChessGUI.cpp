@@ -229,11 +229,15 @@ void ChessGUI::open() {
 
 
 void ChessGUI::undo() {
+    g.undo();
     message("UNDO");
+    update();
 }
 
 void ChessGUI::redo() {
+    g.redo();
     message("REDO");
+    update();
 }
 
 

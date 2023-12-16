@@ -49,6 +49,8 @@ private:
     bool handlePromotionSelected(int r, int k);
 
     void updateThreads();
+
+    static QString pieceToString(ChessPiece *piece);
 };
 
 #endif //SCHAKEN_SCHAAKGUI_H

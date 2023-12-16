@@ -9,7 +9,6 @@
 // Constructor
 SchaakGUI::SchaakGUI():ChessWindow(nullptr) {
     newGame();
-    update();
 }
 
 // Update de inhoud van de grafische weergave van het schaakbord (scene)
@@ -120,7 +119,9 @@ void SchaakGUI::updateThreads() {
 
 void SchaakGUI::newGame()
 {
+    g = Game();
     g.setStartBord();
+    removeAllMarking();
     update();
 }
 
@@ -129,45 +130,93 @@ void SchaakGUI::save() {
     QFile file;
     if (openFileToWrite(file)) {
         QDataStream out(&file);
-        out << QString("Rb") << QString("Hb") << QString("Bb") << QString("Qb") << QString("Kb") << QString("Bb") << QString("Hb") << QString("Rb");
-        for  (int i=0;i<8;i++) {
-            out << QString("Pb");
-        }
-        for  (int r=3;r<7;r++) {
-            for (int k=0;k<8;k++) {
-                out << QString(".");
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8 ; j++) {
+                ChessPiece* piece = g.getPiece(i, j);
+                QString ps = pieceToString(piece);
+                out << ps;
             }
         }
-        for  (int i=0;i<8;i++) {
-            out << QString("Pw");
-        }
-        out << QString("Rw") << QString("Hw") << QString("Bw") << QString("Qw") << QString("Kw") << QString("Bw") << QString("Hw") << QString("Rw");
+        out << QString(g.getTurn() == white ? "w" : "b");
+    }
+}
+
+QString SchaakGUI::pieceToString(ChessPiece* piece) {
+    if (piece == nullptr) return ".";
+    QString pieceString = "";
+    switch (piece->piece().type()) {
+        case Piece::Pawn:
+            pieceString += "P";
+            break;
+        case Piece::Rook:
+            pieceString += "R";
+            break;
+        case Piece::Knight:
+            pieceString += "H";
+            break;
+        case Piece::Bishop:
+            pieceString += "B";
+            break;
+        case Piece::Queen:
+            pieceString += "Q";
+            break;
+        case Piece::King:
+            pieceString += "K";
+            break;
+    }
+    return pieceString + QString(piece->getColor() == white ? "w" : "b");
+}
+
+ChessPiece* stringToPiece(QString pieceString) {
+    if (pieceString == ".") return nullptr;
+    bw color = pieceString[1] == 'w' ? white : black;
+    switch (pieceString[0].toLatin1()) {
+        case 'P':
+            return new Pawn(color);
+        case 'R':
+            return new Rook(color);
+        case 'H':
+            return new Knight(color);
+        case 'B':
+            return new Bishop(color);
+        case 'Q':
+            return new Queen(color);
+        case 'K':
+            return new King(color);
+        default:
+            throw QString("Error parsing file");
     }
 }
 
 void SchaakGUI::open() {
     QFile file;
+    Game newGame = Game();
     if (openFileToRead(file)) {
         try {
             QDataStream in(&file);
-            QString debugstring;
             for (int r=0;r<8;r++) {
                 for (int k=0;k<8;k++) {
                     QString piece;
                     in >> piece;
-                    debugstring += "\t" + piece;
+                    ChessPiece* p = stringToPiece(piece);
+                    newGame.setPiece(r, k , p);
                     if (in.status()!=QDataStream::Ok) {
                         throw QString("Ongeldig formaat");
                     }
                 }
-                debugstring += "\n";
             }
-            message(debugstring);
+            QString turn;
+            in >> turn;
+            newGame.setTurn(turn == "w" ? white : black);
+
+            message("Game loaded");
+            g = newGame;
+            update();
+            updateThreads();
         } catch (QString& Q) {
             message(Q);
         }
     }
-    update();
 }
 
 

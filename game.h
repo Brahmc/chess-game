@@ -25,7 +25,8 @@ public:
     [[nodiscard]] ChessPiece* getPiece(int r, int k) const;
     void setPiece(int r, int k, ChessPiece* s);
 
-    std::pair<int, int> getPosition(Piece::Type type, bw kleur) const;
+
+    std::pair<int, int> getPosition(ChessPiece *piece);
 
     const std::optional<std::pair<int, int>> &getWaitingForPromotion() const;
 
@@ -38,6 +39,8 @@ public:
     bool promotePawn(ChessPiece *piece);
 
     bw getTurn() const;
+
+    void setTurn(bw turn);
 
     [[nodiscard]] std::vector<std::pair<int, int>> getPositionsUnderThreat(bw color);
 
@@ -59,7 +62,7 @@ private:
 
     bw turn = white;
 
-    std::pair<int, int> getPosition(ChessPiece *piece);
+    std::pair<int, int> getPosition(Piece::Type type, bw kleur) const;
 };
 
 #endif //SCHAKEN_GAME_H

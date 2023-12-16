@@ -212,3 +212,7 @@ Pawn *Game::getEnPassantPawn() const {
 void Game::setEnPassantPawn(Pawn *enPassantPawn) {
     Game::enPassantPawn = enPassantPawn;
 }
+
+void Game::setTurn(bw turn) {
+    Game::turn = turn;
+}

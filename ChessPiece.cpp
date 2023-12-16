@@ -3,7 +3,6 @@
 //  Opmerkingen: (bvb aanpassingen van de opgave)
 //
 
-#include <unordered_set>
 #include "ChessPiece.h"
 #include "Game.h"
 
@@ -192,33 +191,49 @@ std::vector<std::pair<int, int>> ChessPiece::getAllowedMoves(int r, int k, Game 
     return moves;
 }
 
-void ChessPiece::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
+/*
+ * Move piece to new position
+ * Returns captured piece
+ */
+ChessPiece * ChessPiece::move(int r, int k, int newR, int newK, Game &g) {
     g.setEnPassantPawn(nullptr);
+
+    ChessPiece* captured = g.getPiece(newR, newK);
+    g.setPiece(r, k, nullptr);
+    g.setPiece(newR, newK, this);
+    return captured;
 }
 
-void Pawn::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
+ChessPiece * Pawn::move(int r, int k, int newR, int newK, Game &g) {
+    ChessPiece* captured = nullptr;
     if (newR != r) { // capture
         ChessPiece* p = g.getPiece(r, newK);
         if (p != nullptr && p->getColor() != getColor() && p == g.getEnPassantPawn()) {
+            captured = g.getPiece(r, newK);
             g.setPiece(r, newK, nullptr);
         }
     }
 
-    ChessPiece::triggerMoveEvent(r, k , newR, newK, g);
+    {
+        ChessPiece* c = ChessPiece::move(r, k, newR, newK, g);
+        if (captured == nullptr) captured = c;
+    }
+
     if (std::abs(r - newR) == 2) g.setEnPassantPawn(this);
 
     if (newR == 0 || newR == 7) {
         g.setWaitingForPromotion(std::optional<std::pair<int, int>>(std::make_pair(newR, newK)));
     }
+
+    return captured;
 }
 
-void Rook::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
-    ChessPiece::triggerMoveEvent(r, k, newR, newK, g);
+ChessPiece * Rook::move(int r, int k, int newR, int newK, Game &g) {
     moved = true;
+    return ChessPiece::move(r, k, newR, newK, g);
 }
 
-void King::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
-    ChessPiece::triggerMoveEvent(r, k, newR, newK, g);
+ChessPiece * King::move(int r, int k, int newR, int newK, Game &g) {
     hasMoved = true;
 
     if (std::abs(newK - k) == 2) { // castle
@@ -227,4 +242,6 @@ void King::triggerMoveEvent(int r, int k, int newR, int newK, Game &g) {
         g.setPiece(r, rookK, nullptr);
         g.setPiece(r, k - newK > 0 ? 3 : 5, rook);
     }
+
+    return ChessPiece::move(r, k, newR, newK, g);
 }

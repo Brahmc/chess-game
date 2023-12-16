@@ -58,6 +58,8 @@ private:
     bool noValidMoves(bw kleur);
 
     bw turn = white;
+
+    std::pair<int, int> getPosition(ChessPiece *piece);
 };
 
 #endif //SCHAKEN_GAME_H

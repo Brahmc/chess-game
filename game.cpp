@@ -47,25 +47,13 @@ void Game::clearBoard() {
 bool Game::move(ChessPiece* s, int r, int k) {
     if (isWaitingForPromotion() || turn != s->getColor()) return false;
 
-    int currentR;
-    int currentK;
-    bool found = false;
-    for (int i = 0; i < 8 && !found; i++) {
-        for (int j = 0; j < 8; j++){
-            if (board[i][j] == s) {
-                found = true;
-                currentR = i;
-                currentK = j;
-                break;
-            }
-        }
-    }
+    auto pos = getPosition(s);
 
-    std::vector<std::pair<int, int>> moves = s->getAllowedMoves(currentR, currentK, *this);
+    std::vector<std::pair<int, int>> moves = s->getAllowedMoves(pos.first,pos.second, *this);
     if (std::find(moves.begin(), moves.end(), std::make_pair(r, k)) == moves.end()) return false;
-    board[currentR][currentK] = nullptr;
-    board[r][k] = s;
-    s->triggerMoveEvent(currentR, currentK, r, k, *this);
+
+    ChessPiece* captured = s->move(pos.first, pos.second, r, k, *this);
+    delete captured;
 
     turn = turn == white ? black : white;
     return true;
@@ -136,6 +124,17 @@ std::pair<int, int> Game::getPosition(Piece::Type type, bw kleur) const {
         for (int j = 0; j < 8; j++){
             ChessPiece* p = board[i][j];
             if (p != nullptr && p->piece().type() == type && p->getColor() == kleur) {
+                return std::make_pair(i, j);
+            }
+        }
+    }
+    return std::make_pair(-1, -1);
+}
+
+std::pair<int, int> Game::getPosition(ChessPiece* piece) {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8 ; j++) {
+            if (board[i][j] == piece) {
                 return std::make_pair(i, j);
             }
         }

@@ -18,7 +18,7 @@ public:
     virtual Piece piece() const=0;
     virtual std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) = 0;
     virtual std::vector<std::pair<int, int>> getAllowedMoves(int r, int k, Game &g);
-    virtual void triggerMoveEvent(int r, int k, int newR, int newK, Game &g);
+    virtual ChessPiece * move(int r, int k, int newR, int newK, Game &g);
 
     [[nodiscard]] bw getColor() const { return color; }
 private:
@@ -34,7 +34,7 @@ public:
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 
-    void triggerMoveEvent(int r, int k, int newR, int newK, Game &g) override;
+    ChessPiece * move(int r, int k, int newR, int newK, Game &g) override;
 
 };
 
@@ -47,7 +47,7 @@ public:
     }
     std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) override;
 
-    void triggerMoveEvent(int r, int k, int newR, int newK, Game &g) override;
+    ChessPiece * move(int r, int k, int newR, int newK, Game &g) override;
 
     [[nodiscard]] bool hasMoved() const { return moved; }
 
@@ -86,7 +86,7 @@ public:
 
     std::vector<std::pair<int, int>> getAllowedMoves(int r, int k, Game &g) override;
 
-    void triggerMoveEvent(int r, int k, int newR, int newK, Game &g) override;
+    ChessPiece * move(int r, int k, int newR, int newK, Game &g) override;
 
 private:
     bool hasMoved = false;

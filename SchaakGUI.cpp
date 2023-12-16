@@ -59,7 +59,7 @@ void SchaakGUI::clicked(int r, int k) {
     };
 
     ChessPiece* piece = g.getPiece(r, k);
-    if (piece == nullptr) return;
+    if (piece == nullptr || piece->getColor() != g.getTurn()) return;
     setTileSelect(r, k,true);
     std::vector<std::pair<int, int>> moves = piece->getAllowedMoves(r, k, g);
     for (auto move : moves) {

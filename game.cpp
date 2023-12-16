@@ -44,7 +44,7 @@ void Game::clearBoard() {
  * Anders wordt de move uitgevoerd en wordt true teruggegeven
  */
 bool Game::move(ChessPiece* s, int r, int k) {
-    if (isWaitingForPromotion()) return false;
+    if (isWaitingForPromotion() || turn != s->getColor()) return false;
 
     int currentR;
     int currentK;
@@ -65,6 +65,8 @@ bool Game::move(ChessPiece* s, int r, int k) {
     board[currentR][currentK] = nullptr;
     board[r][k] = s;
     s->triggerMoveEvent(currentR, currentK, r, k, *this);
+
+    turn = turn == white ? black : white;
     return true;
 }
 
@@ -173,4 +175,8 @@ bool Game::promotePawn(ChessPiece* piece) {
     delete getPiece(waitingForPromotion->first, waitingForPromotion->second);
     setPiece(waitingForPromotion->first, waitingForPromotion->second, piece);
     waitingForPromotion = std::nullopt;
+}
+
+bw Game::getTurn() const {
+    return turn;
 }

@@ -36,11 +36,20 @@ public:
     std::vector<ChessPiece *> getPromotionPieces();
 
     bool promotePawn(ChessPiece *piece);
+
+    bw getTurn() const;
 private:
     ChessPiece* board[8][8];
+
     Pawn* enPassantPawn = nullptr;
+
     std::optional<std::pair<int, int>> waitingForPromotion;
+
     std::vector<ChessPiece*> promotionPieces;
+
+    bw turn = white;
+
+private:
 
     void clearBoard();
 

@@ -32,13 +32,12 @@ void SchaakGUI::update() {
 void SchaakGUI::clicked(int r, int k) {
     if (g.isWaitingForPromotion()) {
         bool success = handlePromotionSelected(r, k);
-        if (success && g.inCheck(g.getTurn())) {
-            message("Check!");
+        if (success) {
+            displayStatusMessage();
         }
         return;
     }
     removeAllTileFocus();
-
 
     ChessPiece* clickedPiece = g.getPiece(r, k);
     if (selected.has_value() && (clickedPiece == nullptr || clickedPiece->getColor() != g.getTurn())) {
@@ -49,15 +48,7 @@ void SchaakGUI::clicked(int r, int k) {
                 drawPromotionSelection();
             } else {
                 updateThreads();
-                if (g.inCheck(g.getTurn())) {
-                    if (g.checkMate(g.getTurn())) {
-                        message("Checkmate! " + QString((g.getTurn() == white ? "Black" : "White")) + " wins!");
-                    } else {
-                        message("Check!");
-                    }
-                } else if (g.staleMate(g.getTurn())) {
-                    message("Stalemate!");
-                }
+                displayStatusMessage();
             }
         }
         selected = std::nullopt;
@@ -75,6 +66,18 @@ void SchaakGUI::clicked(int r, int k) {
         setTileFocus(move.first, move.second, true);
     }
 
+}
+
+void SchaakGUI::displayStatusMessage() {
+    if (g.inCheck(g.getTurn())) {
+        if (g.checkMate(g.getTurn())) {
+            message("Checkmate! " + QString((g.getTurn() == white ? "Black" : "White")) + " wins!");
+        } else {
+            message("Check!");
+        }
+    } else if (g.staleMate(g.getTurn())) {
+        message("Stalemate!");
+    }
 }
 
 void SchaakGUI::drawPromotionSelection() {
@@ -132,16 +135,16 @@ void SchaakGUI::newGame()
 // TODO: save state of En passant pawn, castling
 void SchaakGUI::save() {
     QFile file;
-    if (openFileToWrite(file)) {
-        QDataStream out(&file);
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8 ; j++) {
-                ChessPiece* piece = g.getPiece(i, j);
-                out << pieceToString(piece);
-            }
+    if (!openFileToWrite(file)) return;
+
+    QDataStream out(&file);
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8 ; j++) {
+            ChessPiece* piece = g.getPiece(i, j);
+            out << pieceToString(piece);
         }
-        out << QString(g.getTurn() == white ? "w" : "b");
     }
+    out << QString(g.getTurn() == white ? "w" : "b");
 }
 
 QString SchaakGUI::pieceToString(ChessPiece* piece) {
@@ -194,31 +197,31 @@ ChessPiece* stringToPiece(QString pieceString) {
 void SchaakGUI::open() {
     QFile file;
     Game newGame = Game();
-    if (openFileToRead(file)) {
-        try {
-            QDataStream in(&file);
-            for (int r=0;r<8;r++) {
-                for (int k=0;k<8;k++) {
-                    QString piece;
-                    in >> piece;
-                    ChessPiece* p = stringToPiece(piece);
-                    newGame.setPiece(r, k , p);
-                    if (in.status()!=QDataStream::Ok) {
-                        throw QString("Ongeldig formaat");
-                    }
+    if (!openFileToRead(file)) return;
+
+    try {
+        QDataStream in(&file);
+        for (int r=0;r<8;r++) {
+            for (int k=0;k<8;k++) {
+                QString piece;
+                in >> piece;
+                ChessPiece* p = stringToPiece(piece);
+                newGame.setPiece(r, k , p);
+                if (in.status()!=QDataStream::Ok) {
+                    throw QString("Ongeldig formaat");
                 }
             }
-            QString turn;
-            in >> turn;
-            newGame.setTurn(turn == "w" ? white : black);
-
-            message("Game loaded");
-            g = newGame;
-            update();
-            updateThreads();
-        } catch (QString& Q) {
-            message(Q);
         }
+        QString turn;
+        in >> turn;
+        newGame.setTurn(turn == "w" ? white : black);
+
+        message("Game loaded");
+        g = newGame;
+        update();
+        updateThreads();
+    } catch (QString& Q) {
+        message(Q);
     }
 }
 

@@ -51,6 +51,8 @@ private:
     void updateThreads();
 
     static QString pieceToString(ChessPiece *piece);
+
+    void displayStatusMessage();
 };
 
 #endif //SCHAKEN_SCHAAKGUI_H

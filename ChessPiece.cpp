@@ -222,7 +222,7 @@ ChessPiece * Pawn::move(int r, int k, int newR, int newK, Game &g) {
     if (std::abs(r - newR) == 2) g.setEnPassantPawn(this);
 
     if (newR == 0 || newR == 7) {
-        g.setWaitingForPromotion(std::optional<std::pair<int, int>>(std::make_pair(newR, newK)));
+        g.setPawnWaitingForPromotion(std::optional<std::pair<int, int>>(std::make_pair(newR, newK)));
     }
 
     return captured;

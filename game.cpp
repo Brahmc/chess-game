@@ -142,21 +142,21 @@ std::pair<int, int> Game::getPosition(ChessPiece* piece) {
     return std::make_pair(-1, -1);
 }
 
-const std::optional<std::pair<int, int>> &Game::getWaitingForPromotion() const {
-    return waitingForPromotion;
+const std::optional<std::pair<int, int>> &Game::getPawnWaitingForPromotion() const {
+    return pawnWaitingForPromotion;
 }
 
-void Game::setWaitingForPromotion(const std::optional<std::pair<int, int>> &waitingForPromotion) {
-    Game::waitingForPromotion = waitingForPromotion;
+void Game::setPawnWaitingForPromotion(const std::optional<std::pair<int, int>> &pawnWaitingForPromotion) {
+    Game::pawnWaitingForPromotion = pawnWaitingForPromotion;
 }
 
 bool Game::isWaitingForPromotion() {
-    return waitingForPromotion.has_value();
+    return pawnWaitingForPromotion.has_value();
 }
 
 std::vector<ChessPiece*> Game::getPromotionPieces() {
     std::vector<ChessPiece*> pieces;
-    ChessPiece* promotionPiece = board[waitingForPromotion->first][waitingForPromotion->second];
+    ChessPiece* promotionPiece = board[pawnWaitingForPromotion->first][pawnWaitingForPromotion->second];
     if (promotionPiece == nullptr) return pieces;
     bw color = promotionPiece->getColor();
     pieces.push_back(new Queen(color));
@@ -172,12 +172,12 @@ bool Game::promotePawn(ChessPiece* piece) {
     if (!isWaitingForPromotion()) return false;
     if (std::find(promotionPieces.begin(), promotionPieces.end(), piece) == promotionPieces.end()) return false;
 
-    delete getPiece(waitingForPromotion->first, waitingForPromotion->second);
-    setPiece(waitingForPromotion->first, waitingForPromotion->second, piece);
+    delete getPiece(pawnWaitingForPromotion->first, pawnWaitingForPromotion->second);
+    setPiece(pawnWaitingForPromotion->first, pawnWaitingForPromotion->second, piece);
     for (const auto &item: promotionPieces) {
         if (item != piece) delete item;
     }
-    waitingForPromotion = std::nullopt;
+    pawnWaitingForPromotion = std::nullopt;
 
     return true;
 }

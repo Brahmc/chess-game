@@ -78,7 +78,7 @@ void SchaakGUI::clicked(int r, int k) {
 }
 
 void SchaakGUI::drawPromotionSelection() {
-    std::pair<int,int> promotionPos = g.getWaitingForPromotion().value();
+    std::pair<int,int> promotionPos = g.getPawnWaitingForPromotion().value();
     auto promotionPieces = g.getPromotionPieces();
     int dir = promotionPos.first == 0 ? 1 : -1;
     for (int i = 0; i < promotionPieces.size(); i++) {
@@ -88,7 +88,7 @@ void SchaakGUI::drawPromotionSelection() {
 }
 
 bool SchaakGUI::handlePromotionSelected(int r, int k) {
-    std::pair<int,int> promotionPos = g.getWaitingForPromotion().value();
+    std::pair<int,int> promotionPos = g.getPawnWaitingForPromotion().value();
     int dir = promotionPos.first == 0 ? 1 : -1;
 
     auto promotionPieces = g.getPromotionPieces();
@@ -137,8 +137,7 @@ void SchaakGUI::save() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8 ; j++) {
                 ChessPiece* piece = g.getPiece(i, j);
-                QString ps = pieceToString(piece);
-                out << ps;
+                out << pieceToString(piece);
             }
         }
         out << QString(g.getTurn() == white ? "w" : "b");

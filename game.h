@@ -23,14 +23,15 @@ public:
     void setStartBord();
 
     [[nodiscard]] ChessPiece* getPiece(int r, int k) const;
+
     void setPiece(int r, int k, ChessPiece* s);
 
 
     std::pair<int, int> getPosition(ChessPiece *piece);
 
-    const std::optional<std::pair<int, int>> &getWaitingForPromotion() const;
+    [[nodiscard]] const std::optional<std::pair<int, int>> &getPawnWaitingForPromotion() const;
 
-    void setWaitingForPromotion(const std::optional<std::pair<int, int>> &waitingForPromotion);
+    void setPawnWaitingForPromotion(const std::optional<std::pair<int, int>> &pawnWaitingForPromotion);
 
     bool isWaitingForPromotion();
 
@@ -52,7 +53,7 @@ private:
 
     Pawn* enPassantPawn = nullptr;
 
-    std::optional<std::pair<int, int>> waitingForPromotion;
+    std::optional<std::pair<int, int>> pawnWaitingForPromotion;
 
     std::vector<ChessPiece*> promotionPieces;
 
@@ -62,7 +63,7 @@ private:
 
     bw turn = white;
 
-    std::pair<int, int> getPosition(Piece::Type type, bw kleur) const;
+    [[nodiscard]] std::pair<int, int> getPosition(Piece::Type type, bw kleur) const;
 };
 
 #endif //SCHAKEN_GAME_H

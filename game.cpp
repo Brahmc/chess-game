@@ -94,7 +94,7 @@ bool Game::staleMate(bw kleur) {
 bool Game::noValidMoves(bw kleur) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            if (board[i][j]->getAllowedMoves(i, j, *this).empty()) {
+            if (auto *p = board[i][j]; p != nullptr && p->getColor() == kleur && !p->getAllowedMoves(i, j, *this).empty()) {
                 return false;
             }
         }
@@ -182,13 +182,13 @@ bool Game::promotePawn(ChessPiece* piece) {
     return true;
 }
 
-std::vector<std::pair<int, int>> Game::getPositionsUnderThreat(bw color) const {
+std::vector<std::pair<int, int>> Game::getPositionsUnderThreat(bw color) {
     std::unordered_map<ChessPiece*, std::pair<int, int>> positionsUnderThreat;
     for (int r = 0; r < 8; r++) {
         for (int k = 0; k < 8; k++) {
             ChessPiece* p = getPiece(r, k);
             if (p == nullptr || p->getColor() == color) continue;
-            for (const auto &move: p->getMoves(r, k, *this)) {
+            for (const auto &move: p->getAllowedMoves(r, k, *this)) {
                 ChessPiece* underThread = getPiece(move.first, move.second);
                 if (underThread != nullptr)
                     positionsUnderThreat[underThread] = std::make_pair(move.first, move.second);

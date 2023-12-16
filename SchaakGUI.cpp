@@ -50,7 +50,13 @@ void SchaakGUI::clicked(int r, int k) {
             } else {
                 updateThreads();
                 if (g.inCheck(g.getTurn())) {
-                    message("Check!");
+                    if (g.checkMate(g.getTurn())) {
+                        message("Checkmate! " + QString((g.getTurn() == white ? "Black" : "White")) + " wins!");
+                    } else {
+                        message("Check!");
+                    }
+                } else if (g.staleMate(g.getTurn())) {
+                    message("Stalemate!");
                 }
             }
         }

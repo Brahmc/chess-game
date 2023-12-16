@@ -39,7 +39,7 @@ public:
 
     bw getTurn() const;
 
-    [[nodiscard]] std::vector<std::pair<int, int>> getPositionsUnderThreat(bw color) const;
+    [[nodiscard]] std::vector<std::pair<int, int>> getPositionsUnderThreat(bw color);
 
     [[nodiscard]] Pawn *getEnPassantPawn() const;
 

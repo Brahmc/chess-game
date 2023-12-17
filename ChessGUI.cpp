@@ -229,15 +229,19 @@ void ChessGUI::open() {
 
 
 void ChessGUI::undo() {
-    g.undo();
-    message("UNDO");
+    bool success = g.undo();
+    message(success ? "Undo" : "Cannot undo any further");
     update();
+    removeAllMarking();
+    updateThreads();
 }
 
 void ChessGUI::redo() {
-    g.redo();
-    message("REDO");
+    bool success = g.redo();
+    message(success ? "Redo" : "Cannot redo any further");
     update();
+    removeAllMarking();
+    updateThreads();
 }
 
 

@@ -210,24 +210,26 @@ std::vector<std::pair<int, int>> Game::getPositionsUnderThreat(bw color) {
     return positions;
 }
 
-void Game::undo() {
-    if (historyIndex < 0) return;
+bool Game::undo() {
+    if (historyIndex < 0) return false;
     Move* m = history[historyIndex--];
 
     ChessPiece* moved = getPiece(m->to.first, m->to.second);
     setPiece(m->from.first, m->from.second, moved);
     setPiece(m->to.first, m->to.second, m->captured);
     turn = turn == white ? black : white;
+    return true;
 }
 
-void Game::redo() {
-    if (historyIndex >= (int)history.size() - 1) return;
+bool Game::redo() {
+    if (historyIndex >= (int)history.size() - 1) return false;
     Move* m = history[++historyIndex];
 
     ChessPiece* moved = getPiece(m->from.first, m->from.second);
     setPiece(m->to.first, m->to.second, moved);
     setPiece(m->from.first, m->from.second, nullptr);
     turn = turn == white ? black : white;
+    return true;
 }
 
 bw Game::getTurn() const {

@@ -56,9 +56,9 @@ public:
 
     void setEnPassantPawn(Pawn *enPassantPawn);
 
-    void undo();
+    bool undo();
 
-    void redo();
+    bool redo();
 private:
     ChessPiece* board[8][8];
 

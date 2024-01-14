@@ -18,7 +18,7 @@ public:
     void update() override;
 
 private:
-    Game g;
+    Game* g;
     std::optional<std::pair<int, int>> selected;
 
     void clicked(int x, int y) override;

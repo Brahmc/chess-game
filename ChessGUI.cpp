@@ -17,7 +17,7 @@ void ChessGUI::update() {
     clearBoard();
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8 ; j++) {
-            ChessPiece* piece = g.getPiece(i, j);
+            ChessPiece* piece = g->getPiece(i, j);
             if (piece != nullptr) {
                 setItem(i, j, piece);
             }
@@ -30,7 +30,7 @@ void ChessGUI::update() {
 // geklikt wordt. x,y geeft de positie aan waar er geklikt
 // werd; r is de 0-based rij, k de 0-based kolom
 void ChessGUI::clicked(int r, int k) {
-    if (g.isWaitingForPromotion()) {
+    if (g->isWaitingForPromotion()) {
         bool success = handlePromotionSelected(r, k);
         if (success) {
             displayStatusMessage();
@@ -39,12 +39,12 @@ void ChessGUI::clicked(int r, int k) {
     }
     removeAllTileFocus();
 
-    ChessPiece* clickedPiece = g.getPiece(r, k);
-    if (selected.has_value() && (clickedPiece == nullptr || clickedPiece->getColor() != g.getTurn())) {
-        ChessPiece* selectedPiece = g.getPiece(selected->first, selected->second);
-        if (g.move(selectedPiece, r, k)) {
+    ChessPiece* clickedPiece = g->getPiece(r, k);
+    if (selected.has_value() && (clickedPiece == nullptr || clickedPiece->getColor() != g->getTurn())) {
+        ChessPiece* selectedPiece = g->getPiece(selected->first, selected->second);
+        if (g->move(selectedPiece, r, k)) {
             update();
-            if (g.isWaitingForPromotion()) {
+            if (g->isWaitingForPromotion()) {
                 drawPromotionSelection();
             } else {
                 updateThreads();
@@ -55,13 +55,13 @@ void ChessGUI::clicked(int r, int k) {
         return;
     }
 
-    if (clickedPiece == nullptr || clickedPiece->getColor() != g.getTurn()) return;
+    if (clickedPiece == nullptr || clickedPiece->getColor() != g->getTurn()) return;
     selected = std::make_pair(r, k);
 
     setTileSelect(r, k,true);
     if (!displayMoves()) return;
 
-    std::vector<std::pair<int, int>> moves = clickedPiece->getAllowedMoves(r, k, g);
+    std::vector<std::pair<int, int>> moves = clickedPiece->getAllowedMoves(r, k, *g);
     for (auto move : moves) {
         setTileFocus(move.first, move.second, true);
     }
@@ -69,20 +69,20 @@ void ChessGUI::clicked(int r, int k) {
 }
 
 void ChessGUI::displayStatusMessage() {
-    if (g.inCheck(g.getTurn())) {
-        if (g.checkMate(g.getTurn())) {
-            message("Checkmate! " + QString((g.getTurn() == white ? "Black" : "White")) + " wins!");
+    if (g->inCheck(g->getTurn())) {
+        if (g->checkMate(g->getTurn())) {
+            message("Checkmate! " + QString((g->getTurn() == white ? "Black" : "White")) + " wins!");
         } else {
             message("Check!");
         }
-    } else if (g.staleMate(g.getTurn())) {
+    } else if (g->staleMate(g->getTurn())) {
         message("Stalemate!");
     }
 }
 
 void ChessGUI::drawPromotionSelection() {
-    std::pair<int,int> promotionPos = g.getPawnWaitingForPromotion().value();
-    auto promotionPieces = g.getPromotionPieces();
+    std::pair<int,int> promotionPos = g->getPawnWaitingForPromotion().value();
+    auto promotionPieces = g->getPromotionPieces();
     int dir = promotionPos.first == 0 ? 1 : -1;
     for (int i = 0; i < promotionPieces.size(); i++) {
         setItem(promotionPos.first + i * (dir), promotionPos.second, promotionPieces[i]);
@@ -91,13 +91,13 @@ void ChessGUI::drawPromotionSelection() {
 }
 
 bool ChessGUI::handlePromotionSelected(int r, int k) {
-    std::pair<int,int> promotionPos = g.getPawnWaitingForPromotion().value();
+    std::pair<int,int> promotionPos = g->getPawnWaitingForPromotion().value();
     int dir = promotionPos.first == 0 ? 1 : -1;
 
-    auto promotionPieces = g.getPromotionPieces();
+    auto promotionPieces = g->getPromotionPieces();
     if (r > (promotionPos.first + (int)promotionPieces.size() * dir - 1) || k != promotionPos.second) return false;
     ChessPiece* piece = promotionPieces[promotionPos.first + r * dir];
-    g.promotePawn(piece);
+    g->promotePawn(piece);
 
     removeAllMarking();
     update();
@@ -109,12 +109,12 @@ void ChessGUI::updateThreads() {
     std::vector<std::pair<int, int>> positions;
 
     if (displayThreats()) {
-        auto threads = g.getPositionsUnderThreat(g.getTurn());
+        auto threads = g->getPositionsUnderThreat(g->getTurn());
         positions.insert(positions.end(), threads.begin(), threads.end());
     }
 
     if (displayKills()) {
-        auto kills = g.getPositionsUnderThreat(g.getTurn() == white ? black : white);
+        auto kills = g->getPositionsUnderThreat(g->getTurn() == white ? black : white);
         positions.insert(positions.end(), kills.begin(), kills.end());
     }
 
@@ -125,8 +125,8 @@ void ChessGUI::updateThreads() {
 
 void ChessGUI::newGame()
 {
-    g = Game();
-    g.setStartBord();
+    g = new Game;
+    g->setStartBord();
     removeAllMarking();
     update();
 }
@@ -140,11 +140,11 @@ void ChessGUI::save() {
     QDataStream out(&file);
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8 ; j++) {
-            ChessPiece* piece = g.getPiece(i, j);
+            ChessPiece* piece = g->getPiece(i, j);
             out << pieceToString(piece);
         }
     }
-    out << QString(g.getTurn() == white ? "w" : "b");
+    out << QString(g->getTurn() == white ? "w" : "b");
 }
 
 QString ChessGUI::pieceToString(ChessPiece* piece) {
@@ -198,7 +198,7 @@ ChessPiece* stringToPiece(QString pieceString) {
 
 void ChessGUI::open() {
     QFile file;
-    Game newGame = Game();
+    Game* newGame = new Game;
     if (!openFileToRead(file)) return;
 
     try {
@@ -208,7 +208,7 @@ void ChessGUI::open() {
                 QString piece;
                 in >> piece;
                 ChessPiece* p = stringToPiece(piece);
-                newGame.setPiece(r, k , p);
+                newGame->setPiece(r, k , p);
                 if (in.status()!=QDataStream::Ok) {
                     throw QString("Ongeldig formaat");
                 }
@@ -216,9 +216,10 @@ void ChessGUI::open() {
         }
         QString turn;
         in >> turn;
-        newGame.setTurn(turn == "w" ? white : black);
+        newGame->setTurn(turn == "w" ? white : black);
 
         message("Game loaded");
+        delete g;
         g = newGame;
         update();
         updateThreads();
@@ -229,7 +230,7 @@ void ChessGUI::open() {
 
 
 void ChessGUI::undo() {
-    bool success = g.undo();
+    bool success = g->undo();
     message(success ? "Undo" : "Cannot undo any further");
     update();
     removeAllMarking();
@@ -237,7 +238,7 @@ void ChessGUI::undo() {
 }
 
 void ChessGUI::redo() {
-    bool success = g.redo();
+    bool success = g->redo();
     message(success ? "Redo" : "Cannot redo any further");
     update();
     removeAllMarking();

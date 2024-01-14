@@ -6,6 +6,11 @@
 #include "ChessPiece.h"
 #include "Game.h"
 
+
+ChessPiece::~ChessPiece() {
+
+}
+
 bool isInBounds(int r, int k) {
     return r >= 0 && r < 8 && k >= 0 && k < 8;
 }

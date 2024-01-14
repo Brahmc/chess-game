@@ -20,6 +20,8 @@ public:
     virtual std::vector<std::pair<int, int>> getAllowedMoves(int r, int k, Game &g);
     virtual ChessPiece * move(int r, int k, int newR, int newK, Game &g);
 
+    virtual ~ChessPiece();
+
     [[nodiscard]] bw getColor() const { return color; }
 private:
     bw color;

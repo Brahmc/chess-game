@@ -6,13 +6,25 @@
 #include <unordered_set>
 #include "game.h"
 
-Game::Game() {}
+Game::Game() {
+    clearBoard();
+}
 
-Game::~Game() {}
+Game::~Game() {
+    for (const auto &h: history) {
+        delete h->captured;
+        delete h;
+    }
+
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            delete board[i][j];
+        }
+    }
+}
 
 // Zet het bord klaar; voeg de stukken op de jusite plaats toe
 void Game::setStartBord() {
-    clearBoard();
 
     for (int i = 0; i < 8; i+= 7) {
         bw color = i == 0 ? black : white;

@@ -164,6 +164,7 @@ bool Game::isWaitingForPromotion() {
 }
 
 std::vector<ChessPiece*> Game::getPromotionPieces() {
+    if (!promotionPieces.empty()) return promotionPieces;
     std::vector<ChessPiece*> pieces;
     ChessPiece* promotionPiece = board[pawnWaitingForPromotion->first][pawnWaitingForPromotion->second];
     if (promotionPiece == nullptr) return pieces;
@@ -187,6 +188,7 @@ bool Game::promotePawn(ChessPiece* piece) {
         if (item != piece) delete item;
     }
     pawnWaitingForPromotion = std::nullopt;
+    promotionPieces.clear();
 
     return true;
 }

@@ -40,7 +40,7 @@ void ChessGUI::clicked(int r, int k) {
     removeAllTileFocus();
 
     ChessPiece* clickedPiece = g->getPiece(r, k);
-    if (selected.has_value() && (clickedPiece == nullptr || clickedPiece->getColor() != g->getTurn())) {
+    if (selected.has_value()) {
         ChessPiece* selectedPiece = g->getPiece(selected->first, selected->second);
         if (g->move(selectedPiece, r, k)) {
             update();
@@ -92,10 +92,17 @@ void ChessGUI::drawPromotionSelection() {
 
 bool ChessGUI::handlePromotionSelected(int r, int k) {
     std::pair<int,int> promotionPos = g->getPawnWaitingForPromotion().value();
-    int dir = promotionPos.first == 0 ? 1 : -1;
 
     auto promotionPieces = g->getPromotionPieces();
-    if (r > (promotionPos.first + (int)promotionPieces.size() * dir - 1) || k != promotionPos.second) return false;
+
+    int dir = promotionPos.first == 0 ? 1 : -1;
+    int bound = promotionPos.first + ((int)promotionPieces.size() - 1)*dir;
+    if (k != promotionPos.second ||
+            (promotionPos.first == 0 && r > bound) ||
+            (promotionPos.first == 7 && r < bound)) {
+        return false;
+    }
+
     ChessPiece* piece = promotionPieces[promotionPos.first + r * dir];
     g->promotePawn(piece);
 

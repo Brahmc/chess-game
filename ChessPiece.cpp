@@ -196,6 +196,41 @@ std::vector<std::pair<int, int>> ChessPiece::getAllowedMoves(int r, int k, Game 
     return moves;
 }
 
+std::vector<std::pair<int, int>> ChessPiece::getAllowedMovesUnderThreat(int r, int k, Game &g) {
+    auto moves = ChessPiece::getAllowedMoves(r, k, g);
+    auto it = moves.begin();
+    while( it < moves.end()) {
+        int newR = it->first;
+        int newK = it->second;
+        auto replaced = g.getPiece(newR, newK);
+        g.setPiece(newR, newK, this);
+        g.setPiece(r, k, nullptr);
+
+        if (!isThreatened(newR, newK, g)) {
+            it = moves.erase(it);
+        } else it++;
+
+        g.setPiece(newR, newK, replaced);
+        g.setPiece(r, k, this);
+    }
+    return moves;
+}
+
+bool ChessPiece::isThreatened(int r, int k, Game &g) {
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            ChessPiece* p = g.getPiece(i, j);
+            if (p == nullptr || p->getColor() == color) continue;
+            for (const auto &move: p->getAllowedMoves(i, j, g)) {
+                if (move.first == r && move.second == k) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 /*
  * Move piece to new position
  * Returns captured piece

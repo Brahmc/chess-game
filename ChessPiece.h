@@ -18,6 +18,7 @@ public:
     [[nodiscard]] virtual Piece piece() const=0;
     virtual std::vector<std::pair<int, int>> getMoves(int r, int k, const Game &g) = 0;
     virtual std::vector<std::pair<int, int>> getAllowedMoves(int r, int k, Game &g);
+    std::vector<std::pair<int, int>> getAllowedMovesUnderThreat(int r, int k, Game &g);
     virtual ChessPiece * move(int r, int k, int newR, int newK, Game &g);
 
     virtual ~ChessPiece();
@@ -26,6 +27,7 @@ public:
 private:
     bw color;
 
+    bool isThreatened(int r, int k, Game &g);
 };
 
 class Pawn: public ChessPiece {

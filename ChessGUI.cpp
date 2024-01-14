@@ -61,11 +61,14 @@ void ChessGUI::clicked(int r, int k) {
     setTileSelect(r, k,true);
     if (!displayMoves()) return;
 
-    std::vector<std::pair<int, int>> moves = clickedPiece->getAllowedMoves(r, k, *g);
+    auto moves = clickedPiece->getAllowedMoves(r, k, *g);
     for (auto move : moves) {
         setTileFocus(move.first, move.second, true);
     }
-
+    auto movesUnderThreat = clickedPiece->getAllowedMovesUnderThreat(r, k, *g);
+    for (const auto &move: movesUnderThreat) {
+        setTileThreat(move.first, move.second, true);
+    }
 }
 
 void ChessGUI::displayStatusMessage() {

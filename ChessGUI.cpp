@@ -125,6 +125,7 @@ void ChessGUI::updateThreads() {
 
 void ChessGUI::newGame()
 {
+    delete g;
     g = new Game;
     g->setStartBord();
     removeAllMarking();

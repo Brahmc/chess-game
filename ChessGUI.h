@@ -48,11 +48,13 @@ private:
 
     bool handlePromotionSelected(int r, int k);
 
-    void updateThreads();
+    void updateThreats();
 
     static QString pieceToString(ChessPiece *piece);
 
     void displayStatusMessage();
+
+    void updateSelectedMoves();
 };
 
 #endif //CHESS_CHESS_GUI_H

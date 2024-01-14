@@ -39,7 +39,6 @@ void ChessGUI::clicked(int r, int k) {
     }
     removeAllTileFocus();
 
-    ChessPiece* clickedPiece = g->getPiece(r, k);
     if (selected.has_value()) {
         ChessPiece* selectedPiece = g->getPiece(selected->first, selected->second);
         if (g->move(selectedPiece, r, k)) {
@@ -47,7 +46,7 @@ void ChessGUI::clicked(int r, int k) {
             if (g->isWaitingForPromotion()) {
                 drawPromotionSelection();
             } else {
-                updateThreads();
+                updateThreats();
                 displayStatusMessage();
             }
         }
@@ -55,17 +54,25 @@ void ChessGUI::clicked(int r, int k) {
         return;
     }
 
+    ChessPiece* clickedPiece = g->getPiece(r, k);
     if (clickedPiece == nullptr || clickedPiece->getColor() != g->getTurn()) return;
     selected = std::make_pair(r, k);
 
-    setTileSelect(r, k,true);
-    if (!displayMoves()) return;
+    updateSelectedMoves();
+}
 
-    auto moves = clickedPiece->getAllowedMoves(r, k, *g);
+void ChessGUI::updateSelectedMoves() {
+    removeAllTileFocus();
+    setTileSelect(selected->first, selected->second,true);
+    if (!displayMoves()) return;
+    ChessPiece* selectedPiece = g->getPiece(selected->first, selected->second);
+
+    auto moves = selectedPiece->getAllowedMoves(selected->first, selected->second, *g);
     for (auto move : moves) {
         setTileFocus(move.first, move.second, true);
     }
-    auto movesUnderThreat = clickedPiece->getAllowedMovesUnderThreat(r, k, *g);
+
+    auto movesUnderThreat = selectedPiece->getAllowedMovesUnderThreat(selected->first, selected->second, *g);
     for (const auto &move: movesUnderThreat) {
         setTileThreat(move.first, move.second, true);
     }
@@ -114,7 +121,7 @@ bool ChessGUI::handlePromotionSelected(int r, int k) {
     return true;
 }
 
-void ChessGUI::updateThreads() {
+void ChessGUI::updateThreats() {
     removeAllPieceThreats();
     std::vector<std::pair<int, int>> positions;
 
@@ -233,7 +240,7 @@ void ChessGUI::open() {
         delete g;
         g = newGame;
         update();
-        updateThreads();
+        updateThreats();
     } catch (QString& Q) {
         message(Q);
     }
@@ -245,7 +252,7 @@ void ChessGUI::undo() {
     message(success ? "Undo" : "Cannot undo any further");
     update();
     removeAllMarking();
-    updateThreads();
+    updateThreats();
 }
 
 void ChessGUI::redo() {
@@ -253,13 +260,15 @@ void ChessGUI::redo() {
     message(success ? "Redo" : "Cannot redo any further");
     update();
     removeAllMarking();
-    updateThreads();
+    updateThreats();
 }
 
 
 void ChessGUI::visualizationChange() {
     QString visstring = QString(displayMoves()?"T":"F")+(displayKills()?"T":"F")+(displayThreats()?"T":"F");
-    updateThreads();
+    updateThreats();
+    updateSelectedMoves();
+    if (selected.has_value())
     message(QString("Nieuwe settings : ")+visstring);
 }
 
